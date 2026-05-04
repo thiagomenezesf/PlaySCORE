@@ -1,0 +1,145 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Search, Plus, Shield } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
+import { ChampionshipCard } from '@/components/playscore/championship-card'
+
+// Dados mockados
+const mockMeusCampeonatos = [
+  {
+    id: 1,
+    nome: 'Campeonato da Varzea 2024',
+    logo: undefined,
+    numeroDeJogadoresJogando: 11,
+    idCriador: 1,
+    descricao: 'O campeonato mais tradicional do bairro',
+    status: 'ativo' as const,
+    totalClubes: 8,
+    totalAtletas: 120,
+  },
+]
+
+const mockTodosCampeonatos = [
+  {
+    id: 2,
+    nome: 'Copa Universitaria',
+    logo: undefined,
+    numeroDeJogadoresJogando: 11,
+    idCriador: 2,
+    descricao: 'Campeonato entre as faculdades da regiao',
+    status: 'ativo' as const,
+    totalClubes: 12,
+    totalAtletas: 180,
+  },
+  {
+    id: 3,
+    nome: 'Liga Amadora do Bairro',
+    logo: undefined,
+    numeroDeJogadoresJogando: 11,
+    idCriador: 3,
+    descricao: 'Competicao entre os times amadores locais',
+    status: 'ativo' as const,
+    totalClubes: 6,
+    totalAtletas: 90,
+  },
+]
+
+export default function CampeonatosPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filterCampeonatos = (campeonatos: typeof mockMeusCampeonatos) => {
+    return campeonatos.filter(c =>
+      c.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-display font-bold">Campeonatos</h1>
+          <p className="text-muted-foreground">
+            Gerencie seus campeonatos ou encontre novos para criar ligas.
+          </p>
+        </div>
+        <Button asChild>
+          <Link to="/campeonatos/criar">
+            <Plus className="h-4 w-4 mr-2" />
+            Criar Campeonato
+          </Link>
+        </Button>
+      </div>
+
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar campeonatos..."
+          className="pl-10"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="meus" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="meus" className="gap-2">
+            <Shield className="h-4 w-4" />
+            Meus Campeonatos
+          </TabsTrigger>
+          <TabsTrigger value="todos" className="gap-2">
+            <Shield className="h-4 w-4" />
+            Todos os Campeonatos
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="meus" className="space-y-6">
+          {filterCampeonatos(mockMeusCampeonatos).length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filterCampeonatos(mockMeusCampeonatos).map((campeonato) => (
+                <ChampionshipCard
+                  key={campeonato.id}
+                  campeonato={campeonato}
+                  isOwner={campeonato.idCriador === 1}
+                />
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Shield className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Nenhum campeonato criado</h3>
+                <p className="text-muted-foreground text-center mb-4">
+                  Voce ainda não criou nenhum campeonato. Crie um agora!
+                </p>
+                <Button asChild>
+                  <Link to="/campeonatos/criar">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Criar Campeonato
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="todos" className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filterCampeonatos([...mockMeusCampeonatos, ...mockTodosCampeonatos]).map((campeonato) => (
+              <ChampionshipCard
+                key={campeonato.id}
+                campeonato={campeonato}
+                isOwner={campeonato.idCriador === 1}
+              />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
