@@ -24,12 +24,73 @@ type JogadorEscalado = {
   pontuacao?: number
 }
 
+type FormacaoTatica = {
+  nome: string
+  estrutura: Partial<Record<Atleta['posicao'], number>>
+}
+
 /* ================= MOCKS ================= */
 
-const formacoes11v11 = [
+//POSIÇÕES DETERMINADAS DE ACORDO COM O NÚMERO DE JOGADORES EM CAMPO
+const posicaoLabels: Record<string, string> = {
+  GOL: 'Goleiro',
+  ZAG: 'Zagueiro',
+  LAT: 'Lateral',
+  MEI: 'Meia',
+  ATA: 'Atacante',
+
+  // FUTSAL
+  FIXO: 'Fixo',
+  ALA: 'Ala',
+  PIVO: 'Pivô',
+}
+
+/* ====== ESQUEMAS TÁTICOS DISPONÍVEIS EM CADA "TIPO DE JOGO" ====== */
+
+//CAMPO
+const formacoes11v11: FormacaoTatica[] = [
+  { nome: '3-4-3', estrutura: { GOL: 1, ZAG: 3, MEI: 4, ATA: 3 } },
+  { nome: '3-5-2', estrutura: { GOL: 1, ZAG: 3, MEI: 5, ATA: 2 } },
   { nome: '4-3-3', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 3, ATA: 3 } },
   { nome: '4-4-2', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 4, ATA: 2 } },
+  { nome: '5-2-3', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 2, ATA: 3 } },
+  { nome: '5-3-2', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 3, ATA: 2 } },
+  { nome: '5-4-1', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 4, ATA: 1 } },
 ]
+
+//FUTSAL
+const formacoes5v5: FormacaoTatica[] = [
+  { nome: '1-2-1', estrutura: { GOL: 1, FIXO: 1, ALA: 2, PIVO: 1 } },
+  { nome: '2-2 (2 alas e 2 pivôs)', estrutura: { GOL: 1, ALA: 2, PIVO: 2 } },
+  { nome: '2-2 (2 fixos e 2 pivôs)', estrutura: {GOL: 1, FIXO: 2, PIVO: 2}},
+  { nome: '2-2 (2 fixos e 2 alas)', estrutura: {GOL: 1, FIXO: 2, ALA: 2}}
+]
+
+//FUT7
+const formacoes8v8: FormacaoTatica[] = [
+  { nome: '3-4-3', estrutura: { GOL: 1, ZAG: 3, MEI: 4, ATA: 3 } },
+  { nome: '3-5-2', estrutura: { GOL: 1, ZAG: 3, MEI: 5, ATA: 2 } },
+  { nome: '4-3-3', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 3, ATA: 3 } },
+  { nome: '4-4-2', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 4, ATA: 2 } },
+  { nome: '5-2-3', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 2, ATA: 3 } },
+  { nome: '5-3-2', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 3, ATA: 2 } },
+  { nome: '5-4-1', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 4, ATA: 1 } },
+]
+
+//TIPOS DE JOGO (CAMPO, SALÃO, ETC)
+const tiposJogo = {
+  CAMPO: {
+    formacoes: formacoes11v11,
+    ordemCampo: ['ATA', 'MEI', 'LAT', 'ZAG', 'GOL']
+  },
+
+  FUTSAL: {
+    formacoes: formacoes5v5,
+    ordemCampo: ['PIVO', 'ALA', 'FIXO', 'GOL']
+  }
+}
+
+const configJogo = const configJogo = tiposJogo[mockTodosCampeonatos.tipoJogo]
 
 // 🔥 MOCK pontuação jogador
 const getPontuacaoJogador = (id: number) => {
@@ -69,6 +130,10 @@ const posicaoColors = {
   LAT: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
   MEI: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   ATA: 'bg-red-500/20 text-red-400 border-red-500/30',
+
+  FIXO: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+  ALA: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+  PIVO: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
 }
 
 /* ================= COMPONENT ================= */
@@ -80,17 +145,22 @@ export default function EscalacaoPage() {
   const ligaId = searchParams.get('liga')
 
   const [searchTerm, setSearchTerm] = useState('')
-  const [formacao, setFormacao] = useState(formacoes11v11[0])
+  const [formacao, setFormacao] = useState(
+  configJogo.formacoes[0]
+)
   const [time, setTime] = useState(mockMeuTime)
 
   const [posicaoFiltro, setPosicaoFiltro] = useState<Atleta['posicao'] | 'ALL'>('ALL')
   const [slotSelecionado, setSlotSelecionado] = useState<Atleta['posicao'] | null>(null)
 
-  const [mercadoFechado, setMercadoFechado] = useState(true)
+  const [mercadoFechado, setMercadoFechado] = useState(false)
 
   const gastoTotal = time.escalados.reduce((acc, a) => acc + a.preco, 0)
   const patrimonioRestante = time.patrimonio - gastoTotal
   const rodadaTemPontuacao = time.pontuacaoTotal !== null
+
+  const totalJogadores = Object.values(formacao.estrutura)
+  .reduce((acc, val) => acc + val, 0)
 
   const adicionarJogador = (atleta: Atleta) => {
   const pos = atleta.posicao
@@ -152,6 +222,10 @@ export default function EscalacaoPage() {
     .filter(a => a.nome.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(a => posicaoFiltro === 'ALL' || a.posicao === posicaoFiltro)
 
+  const posicoesDisponiveis = Array.from(
+    new Set(mockMercado.map(a => a.posicao))
+  )
+
   const handleSelecionarSlot = (pos: Atleta['posicao']) => {
     setSlotSelecionado(pos)
     setPosicaoFiltro(pos)
@@ -202,7 +276,7 @@ export default function EscalacaoPage() {
           <div className="p-2 rounded bg-emerald-500/20 border border-emerald-500/30">
             <User className="text-emerald-400" />
           </div>
-          <div><p className="text-sm">Escalados</p><p className="font-bold">{time.escalados.length}/11</p></div>
+          <div><p className="text-sm">Escalados</p><p className="font-bold">{time.escalados.length}/{totalJogadores}</p></div>
         </CardContent></Card>
 
         <Card><CardContent className="p-4 flex gap-3 items-center">
@@ -236,7 +310,7 @@ export default function EscalacaoPage() {
               <Select
                 value={formacao.nome}
                 onValueChange={(v) => {
-                  const novaFormacao = formacoes11v11.find(f => f.nome === v)
+                  const novaFormacao = configJogo.formacoes.find(f => f.nome === v)
                   if (!novaFormacao) return
 
                   const excedeu = Object.entries(novaFormacao.estrutura).some(
@@ -262,7 +336,7 @@ export default function EscalacaoPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {formacoes11v11.map(f => (
+                  {configJogo.formacoes.map(f => (
                     <SelectItem key={f.nome} value={f.nome}>{f.nome}</SelectItem>
                   ))}
                 </SelectContent>
@@ -282,57 +356,45 @@ export default function EscalacaoPage() {
 
                 <div className="absolute inset-0 flex flex-col justify-around p-4">
 
-                  {/* ATA */}
-                  <div className="flex justify-center gap-60 mb-auto p-10">
-                    {Array.from({ length: formacao.estrutura.ATA }).map((_, i) => {
-                      const a = getJogadores('ATA')[i]
-                      return a
-                        ? <PlayerSlot key={a.id} atleta={a} isCapitao={a.isCapitao} onRemove={removerJogador} onCapitao={definirCapitao} mostrarPontuacao={mercadoFechado} />
-                        : <EmptySlot key={i} onClick={() => handleSelecionarSlot('ATA')} selected={slotSelecionado === 'ATA'} />
-                    })}
-                  </div>
+  {configJogo.ordemCampo.map(posicao => {
 
-                  {/* MEIO */}
-                  <div className="flex justify-center gap-40 mb-auto">
-                    <div className="flex gap-15">
-                      {Array.from({ length: formacao.estrutura.MEI }).map((_, i) => {
-                        const a = getJogadores('MEI')[i]
-                        return a
-                          ? <PlayerSlot key={a.id} atleta={a} isCapitao={a.isCapitao} onRemove={removerJogador} onCapitao={definirCapitao} mostrarPontuacao={mercadoFechado} />
-                          : <EmptySlot key={i} onClick={() => handleSelecionarSlot('MEI')} selected={slotSelecionado === 'MEI'} />
-                      })}
-                    </div>
-                  </div>
+    const quantidade = formacao.estrutura[posicao]
 
-                  {/* LAT */}
-                  <div className="flex justify-around gap-100 mb-10">
-                    {Array.from({ length: formacao.estrutura.LAT }).map((_, i) => {
-                      const a = getJogadores('LAT')[i]
-                      return a
-                        ? <PlayerSlot key={a.id} atleta={a} isCapitao={a.isCapitao} onRemove={removerJogador} onCapitao={definirCapitao} mostrarPontuacao={mercadoFechado} />
-                        : <EmptySlot key={i} onClick={() => handleSelecionarSlot('LAT')} selected={slotSelecionado === 'LAT'} />
-                    })}
-                  </div>
+    if (!quantidade) return null
 
-                  {/* ZAG */}
-                  <div className="flex justify-center gap-60 mb-15">
-                    {Array.from({ length: formacao.estrutura.ZAG }).map((_, i) => {
-                      const a = getJogadores('ZAG')[i]
-                      return a
-                        ? <PlayerSlot key={a.id} atleta={a} isCapitao={a.isCapitao} onRemove={removerJogador} onCapitao={definirCapitao} mostrarPontuacao={mercadoFechado} />
-                        : <EmptySlot key={i} onClick={() => handleSelecionarSlot('ZAG')} selected={slotSelecionado === 'ZAG'} />
-                    })}
-                  </div>
+    return (
+      <div
+        key={posicao}
+        className="flex justify-center gap-10"
+      >
+        {Array.from({ length: quantidade }).map((_, i) => {
 
-                  {/* GOL */}
-                  <div className="flex justify-center">
-                    {getJogadores('GOL')[0]
-                      ? <PlayerSlot atleta={getJogadores('GOL')[0]} isCapitao={getJogadores('GOL')[0].isCapitao} onRemove={removerJogador} onCapitao={definirCapitao} mostrarPontuacao={mercadoFechado} />
-                      : <EmptySlot onClick={() => handleSelecionarSlot('GOL')} selected={slotSelecionado === 'GOL'} />
-                    }
-                  </div>
+          const atleta = getJogadores(posicao as Atleta['posicao'])[i]
 
-                </div>
+          return atleta ? (
+            <PlayerSlot
+              key={atleta.id}
+              atleta={atleta}
+              isCapitao={atleta.isCapitao}
+              onRemove={removerJogador}
+              onCapitao={definirCapitao}
+              mostrarPontuacao={mercadoFechado}
+            />
+          ) : (
+            <EmptySlot
+              key={i}
+              onClick={() =>
+                handleSelecionarSlot(posicao as Atleta['posicao'])
+              }
+              selected={slotSelecionado === posicao}
+            />
+          )
+        })}
+      </div>
+    )
+  })}
+
+</div>
               </div>
 
             </CardContent>
@@ -347,23 +409,33 @@ export default function EscalacaoPage() {
 
           <CardContent className="space-y-3">
 
+            {!mercadoFechado ? (
+              <>
+              {/*MERCADO ABERTO*/}
+              
+
             <Input
               placeholder="Buscar jogador..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
 
-            <Select onValueChange={(v: any) => setPosicaoFiltro(v)}>
+            <Select
+            value={posicaoFiltro}
+            onValueChange={(v: any) => setPosicaoFiltro(v)}>
               <SelectTrigger>
                 <SelectValue placeholder="Filtrar posição" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Todas</SelectItem>
-                <SelectItem value="GOL">Goleiro</SelectItem>
-                <SelectItem value="ZAG">Zagueiro</SelectItem>
-                <SelectItem value="LAT">Lateral</SelectItem>
-                <SelectItem value="MEI">Meia</SelectItem>
-                <SelectItem value="ATA">Atacante</SelectItem>
+                {posicoesDisponiveis.map(pos => (
+                  <SelectItem
+                    key={pos}
+                    value={pos}
+                  >
+                    {posicaoLabels[pos] || pos}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -439,7 +511,78 @@ export default function EscalacaoPage() {
                   </Button>
                 </div>
               )
-            })}
+            })} 
+            </>
+            ): (
+    <>
+      {/* RANKING DA RODADA */}
+
+      <Input
+              placeholder="Buscar jogador..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            <Select onValueChange={(v: any) => setPosicaoFiltro(v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Filtrar posição" />
+              </SelectTrigger>
+              <SelectContent>
+                {posicoesDisponiveis.map(pos => (
+    <SelectItem
+      key={pos}
+      value={pos}
+    >
+      {posicaoLabels[pos] || pos}
+    </SelectItem>
+  ))}
+              </SelectContent>
+            </Select>
+
+      {mercadoFiltrado
+        .sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0))
+        .map((a, index) => (
+          <div
+            key={a.id}
+            className="p-3 rounded-lg bg-muted/50"
+          >
+            <div className="flex justify-between items-center">
+
+              <div className="flex items-center gap-3">
+                <span className="font-bold text-lg">
+                  #{index + 1}
+                </span>
+
+                <div>
+                  <p className="font-medium text-sm">
+                    {a.nome}
+                  </p>
+
+                  <p className="text-xs text-muted-foreground">
+                    {a.clube?.nome}
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <p className="text-green-400 font-bold">
+                  {a.pontuacao?.toFixed(2)} pts
+                </p>
+
+                <Badge className={cn(
+                  'border text-xs',
+                  posicaoColors[a.posicao]
+                )}>
+                  {a.posicao}
+                </Badge>
+              </div>
+
+            </div>
+          </div>
+      ))}
+
+    </>
+  )}
 
           </CardContent>
         </Card>

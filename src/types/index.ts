@@ -12,6 +12,11 @@ export interface Usuario {
   createdAt?: Date
 }
 
+export type TipoJogo =
+  | 'CAMPO'
+  | 'FUTSAL'
+  | 'FUT7'
+
 // Campeonato
 export interface Campeonato {
   id: number
@@ -22,6 +27,7 @@ export interface Campeonato {
   descricao?: string
   status: 'ativo' | 'inativo' | 'finalizado'
   createdAt?: Date
+  tipoJogo: TipoJogo
 }
 
 // Liga
@@ -46,12 +52,26 @@ export interface Clube {
   sigla?: string
 }
 
+// ==========================================
+// TIPOS AUXILIARES
+// ==========================================
+
+export type PosicaoAtleta =
+  | 'GOL'
+  | 'ZAG'
+  | 'LAT'
+  | 'MEI'
+  | 'ATA'
+  | 'FIXO'
+  | 'ALA'
+  | 'PIVO'
+
 // Atleta
 export interface Atleta {
   id: number
   nome: string
   foto?: string
-  posicao: 'GOL' | 'ZAG' | 'LAT' | 'MEI' | 'ATA'
+  posicao: PosicaoAtleta
   precoInicial: number
   precoAtual?: number
   idClube: number

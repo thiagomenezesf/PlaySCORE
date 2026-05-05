@@ -6,9 +6,13 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { ChampionshipCard } from '@/components/playscore/championship-card'
+import type { Campeonato, TipoJogo } from '@/types'
 
 // Dados mockados
-const mockMeusCampeonatos = [
+const mockMeusCampeonatos: (Campeonato & {
+  totalClubes?: number
+  totalAtletas?: number
+})[] = [
   {
     id: 1,
     nome: 'Campeonato da Varzea 2024',
@@ -16,13 +20,17 @@ const mockMeusCampeonatos = [
     numeroDeJogadoresJogando: 11,
     idCriador: 1,
     descricao: 'O campeonato mais tradicional do bairro',
-    status: 'ativo' as const,
+    status: 'ativo',
     totalClubes: 8,
     totalAtletas: 120,
+    tipoJogo: 'CAMPO' as TipoJogo
   },
 ]
 
-const mockTodosCampeonatos = [
+const mockTodosCampeonatos: (Campeonato & {
+  totalClubes?: number
+  totalAtletas?: number
+})[] = [
   {
     id: 2,
     nome: 'Copa Universitaria',
@@ -33,6 +41,7 @@ const mockTodosCampeonatos = [
     status: 'ativo' as const,
     totalClubes: 12,
     totalAtletas: 180,
+    tipoJogo: 'FUTSAL' as TipoJogo
   },
   {
     id: 3,
@@ -44,6 +53,7 @@ const mockTodosCampeonatos = [
     status: 'ativo' as const,
     totalClubes: 6,
     totalAtletas: 90,
+    tipoJogo: 'CAMPO' as TipoJogo
   },
 ]
 
