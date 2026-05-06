@@ -22,12 +22,12 @@ export interface Campeonato {
   id: number
   nome: string
   logo?: string
-  numeroDeJogadoresJogando: number
-  idCriador: number
-  descricao?: string
-  status: 'ativo' | 'inativo' | 'finalizado'
-  createdAt?: Date
   tipoJogo: TipoJogo
+  idUsuario: number // FK para Usuario.id
+  numeroDeJogadoresJogando?: number
+  descricao?: string
+  status?: 'ativo' | 'inativo' | 'finalizado'
+  createdAt?: Date
 }
 
 // Liga
@@ -35,8 +35,8 @@ export interface Liga {
   id: number
   nome: string
   logo?: string
-  idCampeonato: number
-  idUsuarioCriador: number
+  idCampeonato: number // FK para Campeonato.id
+  idUsuarioCriador: number // FK para Usuario.id
   codigoAcesso: string
   descricao?: string
   maxParticipantes?: number
@@ -48,7 +48,7 @@ export interface Clube {
   id: number
   nome: string
   logo?: string
-  idCampeonato: number
+  idCampeonato: number // FK para Campeonato.id
   sigla?: string
 }
 
@@ -66,6 +66,23 @@ export type PosicaoAtleta =
   | 'ALA'
   | 'PIVO'
 
+export type StatusRodada =
+  | 'ABERTO'
+  | 'FECHADO'
+
+export type AcaoPontuacao =
+  | 'GOLS'
+  | 'ASSISTENCIAS'
+  | 'CARTOES_AMARELOS'
+  | 'CARTOES_VERMELHOS'
+  | 'FINALIZACOES'
+  | 'IMPEDIMENTOS'
+  | 'FALTAS_COMETIDAS'
+  | 'FALTAS_RECEBIDAS'
+  | 'CANETAS'
+  | 'CHAPEUS'
+  | 'DRIBLES_SIMPLES'
+
 // Atleta
 export interface Atleta {
   id: number
@@ -74,7 +91,8 @@ export interface Atleta {
   posicao: PosicaoAtleta
   precoInicial: number
   precoAtual?: number
-  idClube: number
+  idClube: number // FK para Clube.id
+  idDesempenhoAtleta?: number // FK para DesempenhoAtleta.id
   clube?: Clube
   pontuacao?: number
   mediaPontuacao?: number
@@ -84,47 +102,76 @@ export interface Atleta {
 export interface EquipeFantasy {
   id: number
   nome: string
-  escudo?: string
-  idUsuario: number
-  idLiga: number
+  logo?: string
+  idUsuario: number // FK para Usuario.id
   patrimonio: number
-  pontuacaoTotal: number
+  pontuacaoTotal?: number
   formacaoAtual?: string
   atletas?: Atleta[]
-}
-
-// Escalação
-export interface Escalacao {
-  id: number
-  idEquipeFantasy: number
-  idAtleta: number
-  idRodada: number
-  isTitular: boolean
-  isCapitao?: boolean
 }
 
 // Rodada
 export interface Rodada {
   id: number
-  idCampeonato: number
+  status: StatusRodada
+  idCampeonato: number // FK para Campeonato.id
   numero: number
-  dataInicio: Date
-  dataFim: Date
-  status: 'aberta' | 'em_andamento' | 'fechada' | 'finalizada'
+  dataInicio?: Date
+  dataFim?: Date
 }
 
 // Desempenho do Atleta
 export interface DesempenhoAtleta {
   id: number
-  idAtleta: number
-  idRodada: number
   gols: number
   assistencias: number
-  defesasDificeis?: number
-  golsSofridos?: number
   cartoesAmarelos: number
   cartoesVermelhos: number
-  pontuacaoTotal: number
+  finalizacoes: number
+  impedimentos: number
+  faltasCometidas: number
+  faltasRecebidas: number
+  caneta: number
+  chapeu: number
+  driblesSimples: number
+  idRodada: number // FK para Rodada.id
+  idAtleta: number // FK para Atleta.id
+  pontosCalculados: number
+  valorAtualizado: number
+}
+
+// Regra de Pontuação da Liga
+export interface RegraPontuacaoLiga {
+  id: number
+  acao: AcaoPontuacao
+  valor: number
+  idLiga: number // FK para Liga.id
+}
+
+// Escalação
+export interface Escalacao {
+  id: string // VARCHAR no banco
+  idAtleta: number // FK para Atleta.id
+  idRodada: number // FK para Rodada.id
+  idEquipeFantasy: number // FK para EquipeFantasy.id
+  isTitular?: boolean
+  isCapitao?: boolean
+}
+
+// Desempenho da Equipe Fantasy
+export interface DesempenhoEquipeFantasy {
+  id: number
+  pontuacaoEquipeFantasy: number
+  pontuacaoTotalEquipeFantasy: number
+  idDesempenhoAtleta: number // FK para DesempenhoAtleta.id
+}
+
+// Equipe na Liga
+export interface EquipeLiga {
+  id: number
+  idLiga: number // FK para Liga.id
+  patrimonio: number
+  idEquipeFantasy: number // FK para EquipeFantasy.id
 }
 
 // Participação na Liga

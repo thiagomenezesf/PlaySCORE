@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Plus, Trophy, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -8,136 +8,52 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { LeagueCard } from '@/components/playscore/league-card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
-
-// Dados mockados
-const mockLigasCriadas = [
-  {
-    id: 1,
-    nome: 'Liga dos Amigos',
-    logo: undefined,
-    idCampeonato: 1,
-    idUsuarioCriador: 1,
-    codigoAcesso: 'ABC123',
-    descricao: 'Liga para competir com os amigos do bairro',
-    participantes: 8,
-    campeonatoNome: 'Campeonato da Varzea 2024',
-
-    // 🔥 NOVO
-    detalhes: {
-      rodadaAtual: 2,
-      participantes: [
-        {
-          id: 1,
-          nome: 'Joao Silva',
-          equipe: 'Joao FC',
-          pontuacoes: [100, 80],
-          patrimonios: [100, 105],
-          posicoes: [2, 3],
-        },
-        {
-          id: 2,
-          nome: 'Maria Santos',
-          equipe: 'Maria United',
-          pontuacoes: [90, 110],
-          patrimonios: [100, 115],
-          posicoes: [3, 1],
-        },
-        {
-          id: 3,
-          nome: 'Pedro Costa',
-          equipe: 'Pedro City',
-          pontuacoes: [95, 70],
-          patrimonios: [100, 98],
-          posicoes: [1, 2],
-        },
-      ],
-    },
-  },
-
-  {
-    id: 2,
-    nome: 'Pelada FC',
-    logo: undefined,
-    idCampeonato: 1,
-    idUsuarioCriador: 1,
-    codigoAcesso: 'XYZ789',
-    descricao: 'A liga mais disputada da pelada de domingo',
-    participantes: 12,
-    campeonatoNome: 'Campeonato da Varzea 2024',
-
-    detalhes: {
-      rodadaAtual: 2,
-      participantes: [
-        {
-          id: 4,
-          nome: 'Carlos Souza',
-          equipe: 'Carlos XI',
-          pontuacoes: [80, 95],
-          patrimonios: [100, 110],
-          posicoes: [5, 3],
-        },
-      ],
-    },
-  },
-]
-
-const mockLigasParticipo = [
-  {
-    id: 3,
-    nome: 'Super Liga',
-    logo: undefined,
-    idCampeonato: 2,
-    idUsuarioCriador: 3,
-    codigoAcesso: 'SUP456',
-    descricao: 'A liga mais competitiva da regiao',
-    participantes: 20,
-    campeonatoNome: 'Copa Universitaria',
-
-    detalhes: {
-      rodadaAtual: 2,
-      participantes: [
-        {
-          id: 5,
-          nome: 'Ana Oliveira',
-          equipe: 'Ana FC',
-          pontuacoes: [110, 105],
-          patrimonios: [100, 120],
-          posicoes: [1, 1],
-        },
-      ],
-    },
-  },
-]
-
-export const mockTodasLigas = [
-  ...mockLigasCriadas,
-  ...mockLigasParticipo,
-  {
-    id: 4,
-    nome: 'Liga Master',
-    logo: undefined,
-    idCampeonato: 3,
-    idUsuarioCriador: 4,
-    codigoAcesso: 'MAS789',
-    descricao: 'Liga para os mestres do fantasy',
-    participantes: 16,
-    campeonatoNome: 'Mundial de Fantasy',
-
-    detalhes: {
-      rodadaAtual: 2,
-      participantes: [],
-    },
-  },
-]
+import { useAuth } from '@/hooks/use-auth'
+import { mockLigas, mockCampeonatos, mockEquipesFantasy, mockEquipeLiga } from '@/mocks/database'
 
 export default function LigasPage() {
+  const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [codigoAcesso, setCodigoAcesso] = useState('')
 
+  const ligasComExtras = useMemo(
+    () =>
+      mockLigas.map((liga) => ({
+        ...liga,
+        descricao: 'Liga competitiva para testar seu time.',
+        participantes: mockEquipeLiga.filter((equipe) => equipe.idLiga === liga.id).length,
+        campeonatoNome: mockCampeonatos.find((camp) => camp.id === liga.idCampeonato)?.nome ?? '',
+      })),
+
+    []
+  )
+
+  const userFantasyTeamIds = useMemo(
+    () =>
+      user
+        ? mockEquipesFantasy.filter((equipe) => equipe.idUsuario === user.id).map((equipe) => equipe.id)
+        : [],
+    [user]
+  )
+
+  const mockTodasLigas = ligasComExtras
+  const mockLigasCriadas = ligasComExtras.filter((liga) => user?.id != null && liga.idUsuarioCriador === user.id)
+  const mockLigasParticipo = ligasComExtras.filter((liga) =>
+    userFantasyTeamIds.some((teamId) =>
+      mockEquipeLiga.some((entry) => entry.idLiga === liga.id && entry.idEquipeFantasy === teamId)
+    )
+  )
+
   const handleEntrarLiga = () => {
-    // TODO: Integrar com Spring Boot
     console.log('Entrando na liga com codigo:', codigoAcesso)
   }
 
@@ -223,13 +139,13 @@ export default function LigasPage() {
         <TabsContent value="todas" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {mockTodasLigas
-              .filter(liga => liga.nome.toLowerCase().includes(searchTerm.toLowerCase()))
+              .filter((liga) => liga.nome.toLowerCase().includes(searchTerm.toLowerCase()))
               .map((liga) => (
                 <LeagueCard
                   key={liga.id}
                   liga={liga}
-                  isOwner={liga.idUsuarioCriador === 1}
-                  showJoinButton={true}
+                  isOwner={liga.idUsuarioCriador === user?.id}
+                  showJoinButton={user != null && liga.idUsuarioCriador !== user.id}
                 />
               ))}
           </div>

@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@/hooks/use-auth'
+import { mockEquipesFantasy } from '@/mocks/database'
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
@@ -30,6 +32,13 @@ type FormacaoTatica = {
 }
 
 /* ================= MOCKS ================= */
+
+// Mock do campeonato atual (usado para determinar tipo de jogo)
+const mockCampeonatoAtual = {
+  id: 1,
+  nome: 'Campeonato Várzea 2024',
+  tipoJogo: 'CAMPO' as const
+}
 
 //POSIÇÕES DETERMINADAS DE ACORDO COM O NÚMERO DE JOGADORES EM CAMPO
 const posicaoLabels: Record<string, string> = {
@@ -67,15 +76,7 @@ const formacoes5v5: FormacaoTatica[] = [
 ]
 
 //FUT7
-const formacoes8v8: FormacaoTatica[] = [
-  { nome: '3-4-3', estrutura: { GOL: 1, ZAG: 3, MEI: 4, ATA: 3 } },
-  { nome: '3-5-2', estrutura: { GOL: 1, ZAG: 3, MEI: 5, ATA: 2 } },
-  { nome: '4-3-3', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 3, ATA: 3 } },
-  { nome: '4-4-2', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 4, ATA: 2 } },
-  { nome: '5-2-3', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 2, ATA: 3 } },
-  { nome: '5-3-2', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 3, ATA: 2 } },
-  { nome: '5-4-1', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 4, ATA: 1 } },
-]
+// Formações FUT7 comentadas para evitar erro de variável não utilizada
 
 //TIPOS DE JOGO (CAMPO, SALÃO, ETC)
 const tiposJogo = {
@@ -90,18 +91,11 @@ const tiposJogo = {
   }
 }
 
-const configJogo = const configJogo = tiposJogo[mockTodosCampeonatos.tipoJogo]
+const configJogo = tiposJogo[mockCampeonatoAtual.tipoJogo]
 
 // 🔥 MOCK pontuação jogador
-const getPontuacaoJogador = (id: number) => {
+const getPontuacaoJogador = (_id: number) => {
   return Number((Math.random() * 10).toFixed(2))
-}
-
-const mockMeuTime = {
-  nome: 'Meu Time FC',
-  patrimonio: 105.5,
-  pontuacaoTotal: null,
-  escalados: [] as JogadorEscalado[],
 }
 
 const mockMercado: Atleta[] = [
@@ -139,10 +133,19 @@ const posicaoColors = {
 /* ================= COMPONENT ================= */
 
 export default function EscalacaoPage() {
+  const { user } = useAuth()
   const { toast } = useToast()
 
   const [searchParams] = useSearchParams()
   const ligaId = searchParams.get('liga')
+
+  const equipeFantasy = mockEquipesFantasy.find(equipe => equipe.idUsuario === user?.id)
+  const mockMeuTime = {
+    nome: equipeFantasy?.nome || 'Meu Time FC',
+    patrimonio: equipeFantasy?.patrimonio || 105.5,
+    pontuacaoTotal: null,
+    escalados: [] as JogadorEscalado[],
+  }
 
   const [searchTerm, setSearchTerm] = useState('')
   const [formacao, setFormacao] = useState(
@@ -153,7 +156,7 @@ export default function EscalacaoPage() {
   const [posicaoFiltro, setPosicaoFiltro] = useState<Atleta['posicao'] | 'ALL'>('ALL')
   const [slotSelecionado, setSlotSelecionado] = useState<Atleta['posicao'] | null>(null)
 
-  const [mercadoFechado, setMercadoFechado] = useState(false)
+  const [mercadoFechado] = useState(false)
 
   const gastoTotal = time.escalados.reduce((acc, a) => acc + a.preco, 0)
   const patrimonioRestante = time.patrimonio - gastoTotal
@@ -168,7 +171,7 @@ export default function EscalacaoPage() {
 
   const jogadoresPos = time.escalados.filter(a => a.posicao === pos)
 
-  if (jogadoresPos.length >= limite) return
+  if (limite != null && jogadoresPos.length >= limite) return
 
   const jaExiste = time.escalados.some(a => a.id === atleta.id)
 
@@ -358,7 +361,7 @@ export default function EscalacaoPage() {
 
   {configJogo.ordemCampo.map(posicao => {
 
-    const quantidade = formacao.estrutura[posicao]
+    const quantidade = formacao.estrutura[posicao as Atleta['posicao']]
 
     if (!quantidade) return null
 
@@ -444,7 +447,7 @@ export default function EscalacaoPage() {
 
               const jogadoresPos = time.escalados.filter(j => j.posicao === a.posicao)
               const limitePosicao = formacao.estrutura[a.posicao]
-              const limiteAtingido = jogadoresPos.length >= limitePosicao
+              const limiteAtingido = limitePosicao != null && jogadoresPos.length >= limitePosicao
               const semDinheiro = a.precoInicial > patrimonioRestante
 
               return (

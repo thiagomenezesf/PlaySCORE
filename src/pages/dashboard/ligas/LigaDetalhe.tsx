@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trophy, Copy, Check, Medal } from 'lucide-react'
+import { ArrowLeft, Trophy, Medal } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,24 +10,43 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-import { mockTodasLigas } from './Ligas'
+import { mockLigas, mockCampeonatos } from '@/mocks/database'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function LigaDetalhe() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { user } = useAuth()
   const [copied, setCopied] = useState(false)
   const [tipoRanking, setTipoRanking] = useState<'geral' | 'rodada'>('geral')
 
-  const liga = mockTodasLigas.find(l => l.id === Number(id))
+  const liga = {
+    ...mockLigas.find(l => l.id === Number(id)),
+    campeonatoNome: mockCampeonatos.find(c => c.id === mockLigas.find(l => l.id === Number(id))?.idCampeonato)?.nome ?? ''
+  }
 
-  if (!liga || !liga.detalhes) {
+  if (!liga) {
     return <div className="p-6">Liga não encontrada</div>
   }
 
-  const rodadaAtual = liga.detalhes.rodadaAtual
-  const participantes = liga.detalhes.participantes
+  // Mock data para participantes (simplificado para funcionar)
+  const participantes = [
+    {
+      nome: 'Thiago',
+      pontuacoes: [15.5, 12.0],
+      patrimonios: [120, 115],
+      posicoes: [1, 2]
+    },
+    {
+      nome: 'João',
+      pontuacoes: [12.0, 15.5],
+      patrimonios: [100, 105],
+      posicoes: [2, 1]
+    }
+  ]
 
-  const isOwner = liga.idUsuarioCriador === 1
+  const rodadaAtual = 2
+  const isOwner = liga.idUsuarioCriador === user?.id
 
   // 🔥 FUNÇÕES
   const getUltimaPontuacao = (p: any) => p.pontuacoes[rodadaAtual - 1]
@@ -52,9 +71,11 @@ export default function LigaDetalhe() {
   const usuario = participantes[0]
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(liga.codigoAcesso)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (liga?.codigoAcesso) {
+      navigator.clipboard.writeText(liga.codigoAcesso)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const getMedalColor = (posicao: number) => {

@@ -6,65 +6,22 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { ChampionshipCard } from '@/components/playscore/championship-card'
-import type { Campeonato, TipoJogo } from '@/types'
-
-// Dados mockados
-const mockMeusCampeonatos: (Campeonato & {
-  totalClubes?: number
-  totalAtletas?: number
-})[] = [
-  {
-    id: 1,
-    nome: 'Campeonato da Varzea 2024',
-    logo: undefined,
-    numeroDeJogadoresJogando: 11,
-    idCriador: 1,
-    descricao: 'O campeonato mais tradicional do bairro',
-    status: 'ativo',
-    totalClubes: 8,
-    totalAtletas: 120,
-    tipoJogo: 'CAMPO' as TipoJogo
-  },
-]
-
-const mockTodosCampeonatos: (Campeonato & {
-  totalClubes?: number
-  totalAtletas?: number
-})[] = [
-  {
-    id: 2,
-    nome: 'Copa Universitaria',
-    logo: undefined,
-    numeroDeJogadoresJogando: 11,
-    idCriador: 2,
-    descricao: 'Campeonato entre as faculdades da regiao',
-    status: 'ativo' as const,
-    totalClubes: 12,
-    totalAtletas: 180,
-    tipoJogo: 'FUTSAL' as TipoJogo
-  },
-  {
-    id: 3,
-    nome: 'Liga Amadora do Bairro',
-    logo: undefined,
-    numeroDeJogadoresJogando: 11,
-    idCriador: 3,
-    descricao: 'Competicao entre os times amadores locais',
-    status: 'ativo' as const,
-    totalClubes: 6,
-    totalAtletas: 90,
-    tipoJogo: 'CAMPO' as TipoJogo
-  },
-]
+import { useAuth } from '@/hooks/use-auth'
+import { mockCampeonatos } from '@/mocks/database'
+import type { Campeonato } from '@/types'
 
 export default function CampeonatosPage() {
+  const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
 
-  const filterCampeonatos = (campeonatos: typeof mockMeusCampeonatos) => {
+  const filterCampeonatos = (campeonatos: Campeonato[]) => {
     return campeonatos.filter(c =>
       c.nome.toLowerCase().includes(searchTerm.toLowerCase())
     )
   }
+
+  const meusCampeonatos = mockCampeonatos.filter(c => user?.id != null && c.idUsuario === user.id) as Campeonato[]
+  const todosCampeonatos = mockCampeonatos as Campeonato[]
 
   return (
     <div className="space-y-6">
@@ -109,13 +66,13 @@ export default function CampeonatosPage() {
         </TabsList>
 
         <TabsContent value="meus" className="space-y-6">
-          {filterCampeonatos(mockMeusCampeonatos).length > 0 ? (
+          {filterCampeonatos(meusCampeonatos).length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filterCampeonatos(mockMeusCampeonatos).map((campeonato) => (
+              {filterCampeonatos(meusCampeonatos).map((campeonato) => (
                 <ChampionshipCard
                   key={campeonato.id}
                   campeonato={campeonato}
-                  isOwner={campeonato.idCriador === 1}
+                  isOwner={campeonato.idUsuario === user?.id}
                 />
               ))}
             </div>
@@ -140,11 +97,11 @@ export default function CampeonatosPage() {
 
         <TabsContent value="todos" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filterCampeonatos([...mockMeusCampeonatos, ...mockTodosCampeonatos]).map((campeonato) => (
+            {filterCampeonatos(todosCampeonatos).map((campeonato) => (
               <ChampionshipCard
                 key={campeonato.id}
                 campeonato={campeonato}
-                isOwner={campeonato.idCriador === 1}
+                isOwner={campeonato.idUsuario === user?.id}
               />
             ))}
           </div>

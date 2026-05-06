@@ -18,7 +18,7 @@ interface ChampionshipCardProps {
   isOwner?: boolean
 }
 
-const statusLabels: Record<Campeonato['status'], { label: string; color: string }> = {
+const statusLabels: Record<NonNullable<Campeonato['status']>, { label: string; color: string }> = {
   ativo: { label: 'Ativo', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
   inativo: { label: 'Inativo', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
   finalizado: { label: 'Finalizado', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
@@ -30,7 +30,7 @@ export function ChampionshipCard({
   showActions = true,
   isOwner = false 
 }: ChampionshipCardProps) {
-  const status = statusLabels[campeonato.status]
+  const status = statusLabels[campeonato.status || 'ativo']
 
   return (
     <Card className={cn('overflow-hidden hover:shadow-lg transition-shadow', className)}>

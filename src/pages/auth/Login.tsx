@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { Logo } from '@/components/playscore/logo'
+import { useAuth } from '@/hooks/use-auth'
+import { mockUsuarios } from '@/mocks/database'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -16,15 +18,25 @@ export default function LoginPage() {
     senha: '',
   })
 
+  const { loginAs } = useAuth()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     // TODO: Integrar com Spring Boot via Axios
-    // Simulando login
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Redirecionar para dashboard apos login
+    const user = mockUsuarios.find((u) => u.email === formData.email) ?? mockUsuarios[0]
+    loginAs(user.id)
+
+    navigate('/dashboard')
+  }
+
+  const handleQuickLogin = async () => {
+    setIsLoading(true)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    loginAs(1)
     navigate('/dashboard')
   }
 
@@ -102,6 +114,15 @@ export default function LoginPage() {
 
               <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
                 {isLoading ? 'Entrando...' : 'Entrar'}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full mt-3"
+                onClick={handleQuickLogin}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Entrando...' : 'Entrar como Thiago (ID 1)'}
               </Button>
             </FieldGroup>
           </form>

@@ -21,6 +21,9 @@ const posicaoColors: Record<Atleta['posicao'], string> = {
   LAT: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
   MEI: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   ATA: 'bg-red-500/20 text-red-400 border-red-500/30',
+  FIXO: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+  ALA: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+  PIVO: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
 }
 
 const posicaoLabels: Record<Atleta['posicao'], string> = {
@@ -29,6 +32,9 @@ const posicaoLabels: Record<Atleta['posicao'], string> = {
   LAT: 'Lateral',
   MEI: 'Meia',
   ATA: 'Atacante',
+  FIXO: 'Fixo',
+  ALA: 'Ala',
+  PIVO: 'Pivô',
 }
 
 export function PlayerCard({ 
