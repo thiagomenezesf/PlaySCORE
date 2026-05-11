@@ -15,7 +15,7 @@ import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga } from '
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
-import { layoutsCampo, layoutsFutsal, layoutsFut7, tiposJogo, posicaoLabels, posicaoColors } from '@/lib/escalao-config'
+import { layoutsCampo, layoutsFutsal, layoutsFut7, tiposJogo, posicaoLabels, posicaoColors, layoutsPorTipo } from '@/lib/escalao-config'
 
 type JogadorEscalado = {
   id: number
@@ -108,11 +108,7 @@ export default function EscalacaoPage() {
 )
 
 const layoutAtual =
-  tipoJogo === 'FUTSAL'
-    ? layoutsFutsal[formacao.nome]
-    : tipoJogo === 'FUT7'
-      ? layoutsFut7[formacao.nome]
-      : layoutsCampo[formacao.nome]
+  layoutsPorTipo[tipoJogo][formacao.nome]
 
     if (!layoutAtual) {
   return <div>Layout não encontrado</div>

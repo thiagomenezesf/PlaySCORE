@@ -382,3 +382,9 @@ export const layoutsFut7: Record<string, LayoutFormacao> = {
     GOL: [{ x: 50, y: 88 }]
   }
 }
+
+export const layoutsPorTipo = {
+  CAMPO: layoutsCampo,
+  FUTSAL: layoutsFutsal,
+  FUT7: layoutsFut7
+}
