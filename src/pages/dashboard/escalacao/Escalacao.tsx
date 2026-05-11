@@ -15,6 +15,7 @@ import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga } from '
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
+import { layoutsCampo, layoutsFutsal, layoutsFut7, tiposJogo, posicaoLabels, posicaoColors } from '@/lib/escalao-config'
 
 type JogadorEscalado = {
   id: number
@@ -37,54 +38,7 @@ type FormacaoTatica = {
 
 /* ================= ESQUEMAS TÁTICOS DISPONÍVEIS EM CADA "TIPO DE JOGO" ================ */
 
-//POSIÇÕES DETERMINADAS DE ACORDO COM O NÚMERO DE JOGADORES EM CAMPO
-const posicaoLabels: Record<string, string> = {
-  GOL: 'Goleiro',
-  ZAG: 'Zagueiro',
-  LAT: 'Lateral',
-  MEI: 'Meia',
-  ATA: 'Atacante',
 
-  // FUTSAL
-  FIXO: 'Fixo',
-  ALA: 'Ala',
-  PIVO: 'Pivô',
-}
-
-//CAMPO
-const formacoes11v11: FormacaoTatica[] = [
-  { nome: '3-4-3', estrutura: { GOL: 1, ZAG: 3, MEI: 4, ATA: 3 } },
-  { nome: '3-5-2', estrutura: { GOL: 1, ZAG: 3, MEI: 5, ATA: 2 } },
-  { nome: '4-3-3', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 3, ATA: 3 } },
-  { nome: '4-4-2', estrutura: { GOL: 1, ZAG: 2, LAT: 2, MEI: 4, ATA: 2 } },
-  { nome: '5-2-3', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 2, ATA: 3 } },
-  { nome: '5-3-2', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 3, ATA: 2 } },
-  { nome: '5-4-1', estrutura: { GOL: 1, ZAG: 3, LAT: 2, MEI: 4, ATA: 1 } },
-]
-
-//FUTSAL
-const formacoes5v5: FormacaoTatica[] = [
-  { nome: '1-2-1', estrutura: { GOL: 1, FIXO: 1, ALA: 2, PIVO: 1 } },
-  { nome: '2-2 (2 alas e 2 pivôs)', estrutura: { GOL: 1, ALA: 2, PIVO: 2 } },
-  { nome: '2-2 (2 fixos e 2 pivôs)', estrutura: {GOL: 1, FIXO: 2, PIVO: 2}},
-  { nome: '2-2 (2 fixos e 2 alas)', estrutura: {GOL: 1, FIXO: 2, ALA: 2}}
-]
-
-//FUT7
-// Formações FUT7 comentadas para evitar erro de variável não utilizada
-
-//TIPOS DE JOGO (CAMPO, SALÃO, ETC)
-const tiposJogo: Record<string, { formacoes: FormacaoTatica[], ordemCampo: Atleta['posicao'][] }> = {
-  CAMPO: {
-    formacoes: formacoes11v11,
-    ordemCampo: ['ATA', 'MEI', 'LAT', 'ZAG', 'GOL']
-  },
-
-  FUTSAL: {
-    formacoes: formacoes5v5,
-    ordemCampo: ['PIVO', 'ALA', 'FIXO', 'GOL']
-  }
-}
 
 // configJogo será definido dentro do componente baseado no tipo de jogo
 
@@ -111,22 +65,6 @@ const mockMercado: Atleta[] = [
 
 ]
 
-/* ================= CORES ================= */
-
-const posicaoColors = {
-  GOL: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  ZAG: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  LAT: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-  MEI: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  ATA: 'bg-red-500/20 text-red-400 border-red-500/30',
-
-  FIXO: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-  ALA: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-  PIVO: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-}
-
-/* ================= COMPONENT ================= */
-
 export default function EscalacaoPage() {
   const { user } = useAuth()
   const { toast } = useToast()
@@ -141,7 +79,7 @@ export default function EscalacaoPage() {
   const equipeLiga = liga && equipeFantasy ? mockEquipeLiga.find(el => el.idLiga === liga.id && el.idEquipeFantasy === equipeFantasy.id) : null
   
   // Determinar configuração do jogo baseado no campeonato
-  const tipoJogo = (campeonato?.tipoJogo as 'CAMPO' | 'FUTSAL') || 'CAMPO'
+  const tipoJogo = (campeonato?.tipoJogo as 'CAMPO' | 'FUTSAL' | 'FUT7') || 'CAMPO'
   const configJogo = tiposJogo[tipoJogo]
   
   // Loading states
@@ -168,6 +106,18 @@ export default function EscalacaoPage() {
   const [formacao, setFormacao] = useState(
   configJogo.formacoes[0]
 )
+
+const layoutAtual =
+  tipoJogo === 'FUTSAL'
+    ? layoutsFutsal[formacao.nome]
+    : tipoJogo === 'FUT7'
+      ? layoutsFut7[formacao.nome]
+      : layoutsCampo[formacao.nome]
+
+    if (!layoutAtual) {
+  return <div>Layout não encontrado</div>
+}
+
   const [time, setTime] = useState(mockMeuTime)
 
   // Atualizar time quando os dados mudam
@@ -379,26 +329,27 @@ export default function EscalacaoPage() {
                 <div className="absolute top-1/2 left-4 right-4 h-[2px] bg-white/30" />
                 <div className="absolute left-1/2 top-1/2 w-20 h-20 border border-white/30 rounded-full -translate-x-1/2 -translate-y-1/2" />
 
-                <div className="absolute inset-0 flex flex-col justify-around p-4">
+      <div className="absolute inset-0">
 
-  {configJogo.ordemCampo.map(posicao => {
+  {Object.entries(layoutAtual).map(([posicao, coordenadas]) => {
 
-    const quantidade = formacao.estrutura[posicao as Atleta['posicao']]
+    return coordenadas.map((coord, index) => {
 
-    if (!quantidade) return null
+      const atleta =
+        getJogadores(posicao as Atleta['posicao'])[index]
 
-    return (
-      <div
-        key={posicao}
-        className="flex justify-around gap-10"
-      >
-        {Array.from({ length: quantidade }).map((_, i) => {
-
-          const atleta = getJogadores(posicao as Atleta['posicao'])[i]
-
-          return atleta ? (
+      return (
+        <div
+          key={`${posicao}-${index}`}
+          className="absolute"
+          style={{
+            left: `${coord.x}%`,
+            top: `${coord.y}%`,
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          {atleta ? (
             <PlayerSlot
-              key={atleta.id}
               atleta={atleta}
               isCapitao={atleta.isCapitao}
               onRemove={removerJogador}
@@ -407,18 +358,16 @@ export default function EscalacaoPage() {
             />
           ) : (
             <EmptySlot
-              key={i}
               onClick={() =>
                 handleSelecionarSlot(posicao as Atleta['posicao'])
               }
               selected={slotSelecionado === posicao}
             />
-          )
-        })}
-      </div>
-    )
+          )}
+        </div>
+      )
+    })
   })}
-
 </div>
               </div>
 
