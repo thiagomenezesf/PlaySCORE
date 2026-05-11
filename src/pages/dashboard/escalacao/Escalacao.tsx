@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, User, DollarSign, TrendingUp, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/use-auth'
-import { mockEquipesFantasy } from '@/mocks/database'
+import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga } from '@/mocks/database'
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
@@ -33,12 +33,9 @@ type FormacaoTatica = {
 
 /* ================= MOCKS ================= */
 
-// Mock do campeonato atual (usado para determinar tipo de jogo)
-const mockCampeonatoAtual = {
-  id: 1,
-  nome: 'Campeonato Várzea 2024',
-  tipoJogo: 'CAMPO' as const
-}
+// Será definido dinamicamente baseado na Liga acessada
+
+/* ================= ESQUEMAS TÁTICOS DISPONÍVEIS EM CADA "TIPO DE JOGO" ================ */
 
 //POSIÇÕES DETERMINADAS DE ACORDO COM O NÚMERO DE JOGADORES EM CAMPO
 const posicaoLabels: Record<string, string> = {
@@ -53,8 +50,6 @@ const posicaoLabels: Record<string, string> = {
   ALA: 'Ala',
   PIVO: 'Pivô',
 }
-
-/* ====== ESQUEMAS TÁTICOS DISPONÍVEIS EM CADA "TIPO DE JOGO" ====== */
 
 //CAMPO
 const formacoes11v11: FormacaoTatica[] = [
@@ -79,7 +74,7 @@ const formacoes5v5: FormacaoTatica[] = [
 // Formações FUT7 comentadas para evitar erro de variável não utilizada
 
 //TIPOS DE JOGO (CAMPO, SALÃO, ETC)
-const tiposJogo = {
+const tiposJogo: Record<string, { formacoes: FormacaoTatica[], ordemCampo: Atleta['posicao'][] }> = {
   CAMPO: {
     formacoes: formacoes11v11,
     ordemCampo: ['ATA', 'MEI', 'LAT', 'ZAG', 'GOL']
@@ -91,7 +86,7 @@ const tiposJogo = {
   }
 }
 
-const configJogo = tiposJogo[mockCampeonatoAtual.tipoJogo]
+// configJogo será definido dentro do componente baseado no tipo de jogo
 
 // 🔥 MOCK pontuação jogador
 const getPontuacaoJogador = (_id: number) => {
@@ -136,13 +131,35 @@ export default function EscalacaoPage() {
   const { user } = useAuth()
   const { toast } = useToast()
 
-  const [searchParams] = useSearchParams()
-  const ligaId = searchParams.get('liga')
+  const { ligaId } = useParams()
+  const ligaIdNumber = Number(ligaId)
 
+  // Buscar dados dinamicamente
+  const liga = mockLigas.find(l => l.id === ligaIdNumber)
+  const campeonato = liga ? mockCampeonatos.find(c => c.id === liga.idCampeonato) : null
   const equipeFantasy = mockEquipesFantasy.find(equipe => equipe.idUsuario === user?.id)
+  const equipeLiga = liga && equipeFantasy ? mockEquipeLiga.find(el => el.idLiga === liga.id && el.idEquipeFantasy === equipeFantasy.id) : null
+  
+  // Determinar configuração do jogo baseado no campeonato
+  const tipoJogo = (campeonato?.tipoJogo as 'CAMPO' | 'FUTSAL') || 'CAMPO'
+  const configJogo = tiposJogo[tipoJogo]
+  
+  // Loading states
+  if (!user) {
+    return <div className="p-6">Carregando usuário...</div>
+  }
+
+  if (!liga) {
+    return <div className="p-6">Liga não encontrada</div>
+  }
+
+  if (!campeonato) {
+    return <div className="p-6">Campeonato não encontrado</div>
+  }
+
   const mockMeuTime = {
     nome: equipeFantasy?.nome || 'Meu Time FC',
-    patrimonio: equipeFantasy?.patrimonio || 105.5,
+    patrimonio: equipeLiga?.patrimonio || 100,
     pontuacaoTotal: null,
     escalados: [] as JogadorEscalado[],
   }
@@ -152,6 +169,11 @@ export default function EscalacaoPage() {
   configJogo.formacoes[0]
 )
   const [time, setTime] = useState(mockMeuTime)
+
+  // Atualizar time quando os dados mudam
+  useEffect(() => {
+    setTime(mockMeuTime)
+  }, [mockMeuTime.patrimonio, mockMeuTime.nome])
 
   const [posicaoFiltro, setPosicaoFiltro] = useState<Atleta['posicao'] | 'ALL'>('ALL')
   const [slotSelecionado, setSlotSelecionado] = useState<Atleta['posicao'] | null>(null)
@@ -163,7 +185,7 @@ export default function EscalacaoPage() {
   const rodadaTemPontuacao = time.pontuacaoTotal !== null
 
   const totalJogadores = Object.values(formacao.estrutura)
-  .reduce((acc, val) => acc + val, 0)
+  .reduce((acc, val) => acc + (val || 0), 0)
 
   const adicionarJogador = (atleta: Atleta) => {
   const pos = atleta.posicao
@@ -368,7 +390,7 @@ export default function EscalacaoPage() {
     return (
       <div
         key={posicao}
-        className="flex justify-center gap-10"
+        className="flex justify-around gap-10"
       >
         {Array.from({ length: quantidade }).map((_, i) => {
 

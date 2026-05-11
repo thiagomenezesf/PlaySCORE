@@ -168,24 +168,21 @@ export const mockEquipesFantasy = [
     id: 1,
     nome: 'Time do Thiago',
     logo: undefined,
-    idUsuario: 1,
-    patrimonio: 120
+    idUsuario: 1
   },
 
   {
     id: 2,
     nome: 'Os Craques',
     logo: undefined,
-    idUsuario: 2,
-    patrimonio: 100
+    idUsuario: 2
   },
 
   {
     id: 3,
     nome: 'Equipe Maria',
     logo: undefined,
-    idUsuario: 3,
-    patrimonio: 110
+    idUsuario: 3
   }
 ]
 

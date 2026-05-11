@@ -64,3 +64,4 @@ export const tiposJogo: Record<TipoJogo, { formacoes: FormacaoTatica[]; ordemCam
     ordemCampo: ['ATA', 'MEI', 'ZAG', 'GOL'],
   },
 }
+
