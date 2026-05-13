@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Save } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Save, ArrowLeft, Settings } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 export default function Configuracoes() {
+  const navigate = useNavigate()
 
   // 🔒 SENHA
   const [senhaAtual, setSenhaAtual] = useState('')
@@ -67,8 +69,21 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-background">
+      {/* HEADER COM VOLTAR */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <Settings className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-display font-bold">Configurações</h1>
+          </div>
+        </div>
+      </div>
 
+      <div className="max-w-2xl mx-auto p-6 space-y-6">
       {/* 🔒 SEGURANÇA */}
       <Card>
         <CardHeader>
@@ -155,6 +170,7 @@ export default function Configuracoes() {
         </CardContent>
       </Card>
 
+      </div>
     </div>
   )
 }

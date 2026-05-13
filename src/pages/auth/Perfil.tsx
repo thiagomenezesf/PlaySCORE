@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Pencil, Save, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Pencil, Save, X, ArrowLeft, User } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function Perfil() {
+  const navigate = useNavigate()
   const [editando, setEditando] = useState(false)
 
   // 🔥 MOCK USUÁRIO
@@ -46,9 +48,22 @@ export default function Perfil() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-background">
+      {/* HEADER COM VOLTAR */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <User className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-display font-bold">Meu Perfil</h1>
+          </div>
+        </div>
+      </div>
 
-      {/* HEADER */}
+      <div className="max-w-6xl mx-auto p-6 space-y-6">
+      {/* CARD DE PERFIL */}
       <Card>
         <CardContent className="flex items-center justify-between p-6">
           <div className="flex items-center gap-4">
@@ -183,6 +198,7 @@ export default function Perfil() {
         </CardContent>
       </Card>
 
+      </div>
     </div>
   )
 }
