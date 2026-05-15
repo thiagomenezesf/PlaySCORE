@@ -28,6 +28,7 @@ export default function GerenciarLigaPage() {
     descricao: (liga as Liga | undefined)?.descricao ?? '',
     idCampeonato: liga?.idCampeonato.toString() ?? '',
     maxParticipantes: (liga as Liga | undefined)?.maxParticipantes?.toString() ?? '20',
+    codigoAcesso: (liga as Liga | undefined)?.codigoAcesso.toString() ?? ''
   }))
 
   const regrasPorAcao: { [key: string]: number } = {}
@@ -162,6 +163,17 @@ export default function GerenciarLigaPage() {
                     disabled={!isOwner}
                   />
                 </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="codigoAcesso">Código de Acesso</FieldLabel>
+                  <Input
+                    id="codigoAcesso"
+                    value={formData.codigoAcesso}
+                    onChange={(e) => setFormData({ ...formData, codigoAcesso: e.target.value })}
+                    disabled={!isOwner}
+                    required
+                  />
+                </Field>
               </FieldGroup>
 
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -204,7 +216,7 @@ export default function GerenciarLigaPage() {
                 </div>
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>Equipes</span>
-                  <span>{equipes.length}</span>
+                  <span>{equipes.length}/{liga.maxParticipantes}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>Status</span>

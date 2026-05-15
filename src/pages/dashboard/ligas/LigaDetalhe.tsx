@@ -179,7 +179,7 @@ export default function LigaDetalhe() {
 
                 <div className="p-4 bg-muted rounded">
                   <p className="text-sm">Equipe</p>
-                  <p className="font-bold text-primary">{usuario.nomeEquipe}</p>
+                  <p className="text-lg font-bold text-primary">{usuario.nomeEquipe}</p>
                 </div>
               </>
             )}

@@ -59,7 +59,8 @@ export const mockLigas = [
     logo: undefined,
     idCampeonato: 1,
     idUsuarioCriador: 1,
-    codigoAcesso: 'ABC123'
+    codigoAcesso: 'ABC123',
+    maxParticipantes: 10
   },
 
   {
@@ -68,7 +69,8 @@ export const mockLigas = [
     logo: undefined,
     idCampeonato: 2,
     idUsuarioCriador: 2,
-    codigoAcesso: 'FUTSAL'
+    codigoAcesso: 'FUTSAL',
+    maxParticipantes: 15
   },
 
   {
@@ -77,7 +79,8 @@ export const mockLigas = [
     logo: undefined,
     idCampeonato: 3,
     idUsuarioCriador: 3,
-    codigoAcesso: 'SOCIETY'
+    codigoAcesso: 'SOCIETY',
+    maxParticipantes: 20
   }
 ]
 
@@ -167,7 +170,7 @@ export const mockEquipesFantasy = [
   {
     id: 1,
     nome: 'Time do Thiago',
-    logo: undefined,
+    logo: 'https://s2-oglobo.glbimg.com/x4Y1G1MqbENX9R4PFvZmmI_wwTY=/0x0:613x631/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2026/r/D/x6aVyoRTiBXocaO5yhiw/screenshot-162.png',
     idUsuario: 1
   },
 
