@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Shield, Settings, Copy } from 'lucide-react'
+import { ArrowLeft, Shield, Settings, Copy, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,7 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { mockCampeonatos, mockEquipeLiga, mockEquipesFantasy, mockLigas } from '@/mocks/database'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { mockCampeonatos, mockEquipeLiga, mockEquipesFantasy, mockLigas, mockRegraPontuacaoLiga } from '@/mocks/database'
 import { useAuth } from '@/hooks/use-auth'
 import type { Campeonato, EquipeFantasy, Liga } from '@/types'
 
@@ -21,12 +22,34 @@ export default function GerenciarLigaPage() {
   const liga = (mockLigas as Liga[]).find((item) => item.id === Number(id))
 
   const [copied, setCopied] = useState(false)
+  const [activeTab, setActiveTab] = useState('info')
   const [formData, setFormData] = useState(() => ({
     nome: liga?.nome ?? '',
     descricao: (liga as Liga | undefined)?.descricao ?? '',
     idCampeonato: liga?.idCampeonato.toString() ?? '',
     maxParticipantes: (liga as Liga | undefined)?.maxParticipantes?.toString() ?? '20',
   }))
+
+  const regrasPorAcao: { [key: string]: number } = {}
+  if (liga) {
+    mockRegraPontuacaoLiga.forEach(r => {
+      if (r.idLiga === liga.id) {
+        regrasPorAcao[r.acao] = r.valor
+      }
+    })
+  }
+
+  const acoesPontuacao = [
+    { id: 'GOLS', nome: 'Gol', descricao: 'Pontos por gol marcado' },
+    { id: 'ASSISTENCIAS', nome: 'Assistência', descricao: 'Pontos por assistência' },
+    { id: 'CARTOES_AMARELOS', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
+    { id: 'CARTOES_VERMELHOS', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
+    { id: 'FINALIZACOES', nome: 'Finalizações', descricao: 'Pontos por finalização' },
+    { id: 'CANETAS', nome: 'Canetas', descricao: 'Pontos por caneta' },
+    { id: 'CHAPEUS', nome: 'Chapéus', descricao: 'Pontos por chapéu' },
+    { id: 'DRIBLES_SIMPLES', nome: 'Dribles', descricao: 'Pontos por drible' },
+  ]
+  const selectedAcoes = Object.keys(regrasPorAcao)
 
   if (!liga) {
     return <div className="p-6">Liga não encontrada</div>
@@ -67,7 +90,14 @@ export default function GerenciarLigaPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="info">Informações</TabsTrigger>
+          <TabsTrigger value="regras">Regras de Pontuação</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="info" className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -200,6 +230,68 @@ export default function GerenciarLigaPage() {
           </Card>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="regras" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-primary" />
+                Regras de Pontuação
+              </CardTitle>
+              <CardDescription>
+                Selecione as ações que darão pontos nesta liga
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FieldGroup className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    As ações selecionadas abaixo são as ativas para esta liga. Para adicionar/remover ações, edite a liga.
+                  </p>
+                  <div className="grid gap-2">
+                    {acoesPontuacao.map((acao) => (
+                      <div key={acao.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                        <div>
+                          <p className="font-medium text-sm">{acao.nome}</p>
+                          <p className="text-xs text-muted-foreground">{acao.descricao}</p>
+                        </div>
+                        {selectedAcoes.includes(acao.id) && (
+                          <Badge variant="secondary">{regrasPorAcao[acao.id]} pts</Badge>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedAcoes.length > 0 && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <h4 className="font-medium text-sm">Ações Ativas ({selectedAcoes.length})</h4>
+                    <div className="space-y-2">
+                      {selectedAcoes.map((acaoId) => {
+                        const acao = acoesPontuacao.find(a => a.id === acaoId)!
+                        const valor = regrasPorAcao[acaoId]
+                        return (
+                          <div key={acaoId} className="p-3 bg-muted rounded-lg flex items-center justify-between">
+                            <span className="font-medium">{acao.nome}</span>
+                            <Badge variant={valor >= 0 ? 'default' : 'destructive'}>
+                              {valor >= 0 ? '+' : ''}{valor}
+                            </Badge>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-xs text-muted-foreground mt-4">
+                  💡 As regras da liga são estáticas e gerenciadas via banco de dados. Para modificar, entre em contato com o administrador.
+                </p>
+              </FieldGroup>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

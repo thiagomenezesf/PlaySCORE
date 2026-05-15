@@ -10,8 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-import { mockLigas, mockCampeonatos } from '@/mocks/database'
+import { mockLigas, mockCampeonatos, mockEquipeLiga, mockEquipesFantasy, mockUsuarios, mockRegraPontuacaoLiga, mockDesempenhoEquipeFantasy, mockDesempenhoAtleta, mockRodadas, mockClubes, mockAtletas } from '@/mocks/database'
 import { useAuth } from '@/hooks/use-auth'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 export default function LigaDetalhe() {
   const navigate = useNavigate()
@@ -19,6 +21,7 @@ export default function LigaDetalhe() {
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
   const [tipoRanking, setTipoRanking] = useState<'geral' | 'rodada'>('geral')
+  const [rodadaSelecionada, setRodadaSelecionada] = useState<number | 'todas'>('todas')
 
   const liga = {
     ...mockLigas.find(l => l.id === Number(id)),
@@ -29,46 +32,46 @@ export default function LigaDetalhe() {
     return <div className="p-6">Liga não encontrada</div>
   }
 
-  // Mock data para participantes (simplificado para funcionar)
-  const participantes = [
-    {
-      nome: 'Thiago',
-      pontuacoes: [15.5, 12.0],
-      patrimonios: [120, 115],
-      posicoes: [1, 2]
-    },
-    {
-      nome: 'João',
-      pontuacoes: [12.0, 15.5],
-      patrimonios: [100, 105],
-      posicoes: [2, 1]
-    }
-  ]
+  const equipesLiga = mockEquipeLiga.filter(el => el.idLiga === liga.id)
+  const rodasLiga = mockRodadas.filter(r => r.idCampeonato === liga.idCampeonato)
+  const rodadaAtual = rodasLiga.length > 0 ? rodasLiga[rodasLiga.length - 1].numero : 1
 
-  const rodadaAtual = 2
+  const participantes = equipesLiga.map(equipeLiga => {
+    const equipeFantasy = mockEquipesFantasy.find(e => e.id === equipeLiga.idEquipeFantasy)!
+    const usuario = mockUsuarios.find(u => u.id === equipeFantasy.idUsuario)!
+    const desempenhos = mockDesempenhoEquipeFantasy.filter(d => d.idEquipeFantasy === equipeLiga.idEquipeFantasy && d.idLiga === liga.id)
+
+    const pontuacoesPorRodada: { [key: number]: number } = {}
+    desempenhos.forEach(d => {
+      pontuacoesPorRodada[d.idRodada] = (d.pontuacaoRodada || 0)
+    })
+
+    return {
+      id: equipeLiga.id,
+      nomeEquipe: equipeFantasy.nome,
+      logoEquipe: equipeFantasy.logo,
+      nomeUsuario: usuario.nome,
+      idEquipeFantasy: equipeFantasy.id,
+      pontuacoesPorRodada,
+      pontuacaoTotal: equipeLiga.pontuacaoTotal || 0,
+      patrimonio: equipeLiga.patrimonio
+    }
+  })
   const isOwner = liga.idUsuarioCriador === user?.id
 
-  // 🔥 FUNÇÕES
-  const getUltimaPontuacao = (p: any) => p.pontuacoes[rodadaAtual - 1]
-  const getPontuacaoAnterior = (p: any) => p.pontuacoes[rodadaAtual - 2] || 0
-  const getVariacaoPontuacao = (p: any) => getUltimaPontuacao(p) - getPontuacaoAnterior(p)
+  // Funções de cálculo
+  const getPontuacaoRodada = (p: any, rodada: number) => p.pontuacoesPorRodada[rodada] || 0
+  const getPontuacaoTotal = (p: any) => p.pontuacaoTotal
 
-  const getTotal = (p: any) => p.pontuacoes.reduce((a: number, b: number) => a + b, 0)
+  const participantesRanqueados = tipoRanking === 'geral'
+    ? [...participantes].sort((a, b) => getPontuacaoTotal(b) - getPontuacaoTotal(a))
+    : [...participantes].sort((a, b) =>
+        getPontuacaoRodada(b, rodadaSelecionada === 'todas' ? rodadaAtual : Number(rodadaSelecionada)) -
+        getPontuacaoRodada(a, rodadaSelecionada === 'todas' ? rodadaAtual : Number(rodadaSelecionada))
+      )
 
-  const getPatrimonioAtual = (p: any) => p.patrimonios[rodadaAtual - 1]
-  const getPatrimonioAnterior = (p: any) => p.patrimonios[rodadaAtual - 2] || 0
-  const getVariacaoPatrimonio = (p: any) => getPatrimonioAtual(p) - getPatrimonioAnterior(p)
-
-  const getPosicaoAtual = (p: any) => p.posicoes[rodadaAtual - 1]
-  const getVariacaoPosicao = (p: any) =>
-    (p.posicoes[rodadaAtual - 2] || p.posicoes[rodadaAtual - 1]) -
-    p.posicoes[rodadaAtual - 1]
-
-  const destaqueRodada = [...participantes].sort(
-    (a, b) => getUltimaPontuacao(b) - getUltimaPontuacao(a)
-  )[0]
-
-  const usuario = participantes[0]
+  const destaqueRodada = participantesRanqueados[0]
+  const usuario = participantes.find(p => p.idEquipeFantasy === mockEquipesFantasy.find(e => e.idUsuario === user?.id)?.id)
 
   const handleCopyCode = () => {
     if (liga?.codigoAcesso) {
@@ -149,49 +152,42 @@ export default function LigaDetalhe() {
 
             <div className="p-4 bg-muted rounded">
               <p className="text-sm">🔥 Destaque</p>
-              <p className="font-bold">{destaqueRodada?.nome}</p>
-              <p className='text-xl font-bold text-green-400'>{getUltimaPontuacao(destaqueRodada)} pts</p>
+              <p className="font-bold">{destaqueRodada?.nomeEquipe}</p>
+              <p className='text-xl font-bold text-green-400'>{tipoRanking === 'geral' ? destaqueRodada?.pontuacaoTotal : getPontuacaoRodada(destaqueRodada, rodadaSelecionada === 'todas' ? rodadaAtual : Number(rodadaSelecionada))} pts</p>
             </div>
 
-            <div className="p-4 bg-muted rounded">
-              <p className="text-sm">Sua posição</p>
-              <p className="text-2xl font-bold">#{getPosicaoAtual(usuario)}</p>
-            </div>
+            {usuario && (
+              <>
+                <div className="p-4 bg-muted rounded">
+                  <p className="text-sm">Sua posição</p>
+                  <p className="text-2xl font-bold">#{participantesRanqueados.findIndex(p => p.id === usuario.id) + 1}</p>
+                </div>
 
-            <div className="p-4 bg-muted rounded">
-              <p className="text-sm">Evolução</p>
-              <p className={getVariacaoPosicao(usuario) >= 0 ? "text-xl font-bold text-green-400" : "text-xl font-bold text-red-400"}>
-                {getVariacaoPosicao(usuario) > 0 ? '↑' : '↓'}
-                {Math.abs(getVariacaoPosicao(usuario))}
-              </p>
-            </div>
+                <div className="p-4 bg-muted rounded">
+                  <p className="text-sm">Sua pontuação</p>
+                  <p className="text-xl font-bold text-green-400">
+                    {tipoRanking === 'geral' ? usuario.pontuacaoTotal : getPontuacaoRodada(usuario, rodadaSelecionada === 'todas' ? rodadaAtual : Number(rodadaSelecionada))} pts
+                  </p>
+                </div>
 
-            <div className="p-4 bg-muted rounded">
-              <p className="text-sm">Sua pontuação</p>
-              <p className="text-xl font-bold text-green-400">
-                {getUltimaPontuacao(usuario)} pts
-              </p>
-              <p className={getVariacaoPontuacao(usuario) >= 0 ? 'text-green-400' : 'text-red-400'}>
-                {getVariacaoPontuacao(usuario) >= 0 ? '↑' : '↓'}
-                {Math.abs(getVariacaoPontuacao(usuario))}
-              </p>
-            </div>
+                <div className="p-4 bg-muted rounded">
+                  <p className="text-sm">Patrimônio</p>
+                  <p className="text-xl font-bold">
+                    C$ {usuario.patrimonio}
+                  </p>
+                </div>
 
-            <div className="p-4 bg-muted rounded">
-              <p className="text-sm">Patrimônio</p>
-              <p className="text-xl font-bold">
-                C$ {getPatrimonioAtual(usuario)}
-              </p>
-              <p className={getVariacaoPatrimonio(usuario) >= 0 ? 'text-green-400' : 'text-red-400'}>
-                {getVariacaoPatrimonio(usuario) >= 0 ? '↑' : '↓'}
-                {Math.abs(getVariacaoPatrimonio(usuario))}
-              </p>
-            </div>
+                <div className="p-4 bg-muted rounded">
+                  <p className="text-sm">Equipe</p>
+                  <p className="font-bold text-primary">{usuario.nomeEquipe}</p>
+                </div>
+              </>
+            )}
 
           </div>
 
           {/* FILTRO */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 items-center flex-wrap">
             <Button
               variant={tipoRanking === 'geral' ? 'default' : 'outline'}
               onClick={() => setTipoRanking('geral')}
@@ -205,6 +201,21 @@ export default function LigaDetalhe() {
             >
               Rodada
             </Button>
+
+            {tipoRanking === 'rodada' && (
+              <Select value={rodadaSelecionada.toString()} onValueChange={(v) => setRodadaSelecionada(v === 'todas' ? 'todas' : Number(v))}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {rodasLiga.map(rodada => (
+                    <SelectItem key={rodada.id} value={rodada.numero.toString()}>
+                      Rodada {rodada.numero}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* TABELA */}
@@ -224,35 +235,43 @@ export default function LigaDetalhe() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Pos</TableHead>
-                    <TableHead>Participante</TableHead>
+                    <TableHead>Logo</TableHead>
                     <TableHead>Equipe</TableHead>
+                    <TableHead>Usuário</TableHead>
                     <TableHead className="text-right">Pontos</TableHead>
-                    <TableHead>Patrimônio</TableHead>
+                    <TableHead className="text-right">Patrimônio</TableHead>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
-                  {participantes.map((p: any) => (
+                  {participantesRanqueados.map((p, idx) => (
                     <TableRow key={p.id}>
                       <TableCell>
-                        {getPosicaoAtual(p) <= 3 ? (
-                          <Medal className={`h-5 w-5 ${getMedalColor(getPosicaoAtual(p))}`} />
+                        {idx + 1 <= 3 ? (
+                          <Medal className={`h-5 w-5 ${getMedalColor(idx + 1)}`} />
                         ) : (
-                          getPosicaoAtual(p)
+                          idx + 1
                         )}
                       </TableCell>
 
-                      <TableCell>{p.nome}</TableCell>
-                      <TableCell>{p.equipe}</TableCell>
+                      <TableCell>
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={p.logoEquipe} alt={p.nomeEquipe} />
+                          <AvatarFallback>{p.nomeEquipe.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+
+                      <TableCell className="font-bold">{p.nomeEquipe}</TableCell>
+                      <TableCell>{p.nomeUsuario}</TableCell>
 
                       <TableCell className="text-right font-bold text-primary">
                         {tipoRanking === 'geral'
-                          ? getTotal(p)
-                          : getUltimaPontuacao(p)}
+                          ? p.pontuacaoTotal
+                          : getPontuacaoRodada(p, rodadaSelecionada === 'todas' ? rodadaAtual : Number(rodadaSelecionada))}
                       </TableCell>
 
-                      <TableCell>
-                        C$ {getPatrimonioAtual(p)}
+                      <TableCell className="text-right">
+                        C$ {p.patrimonio}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -268,69 +287,184 @@ export default function LigaDetalhe() {
             <CardHeader>
               <CardTitle>Regras da Liga</CardTitle>
               <CardDescription>
-                Configurações e sistema de pontuação
+                Sistema de pontuação e configurações
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-lg bg-muted">
-                  <p className="text-sm text-muted-foreground">Patrimônio Inicial</p>
-                  <p className="text-xl font-bold">C$ 100</p>
-                </div>
-
-                <div className="p-4 rounded-lg bg-muted">
-                  <p className="text-sm text-muted-foreground">Formação</p>
-                  <p className="text-xl font-bold">4-3-3</p>
-                </div>
-
-                <div className="p-4 rounded-lg bg-muted">
-                  <p className="text-sm text-muted-foreground">Capitão</p>
-                  <p className="text-xl font-bold">Ativo</p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-3">Sistema de Pontuação</h3>
-
-                <div className="grid md:grid-cols-2 gap-3">
-                  <div className="p-3 bg-muted rounded flex justify-between">
-                    <span>⚽ Gol</span>
-                    <span className="font-bold text-green-400">+10</span>
+              {mockRegraPontuacaoLiga.filter(r => r.idLiga === liga.id).length > 0 ? (
+                <div>
+                  <h3 className="font-semibold mb-3">Sistema de Pontuação</h3>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {mockRegraPontuacaoLiga.filter(r => r.idLiga === liga.id).map((regra) => {
+                      const acaoIcones: { [key: string]: string } = {
+                        'GOLS': '⚽',
+                        'ASSISTENCIAS': '🎯',
+                        'CARTOES_AMARELOS': '🟨',
+                        'CARTOES_VERMELHOS': '🟥',
+                        'FINALIZACOES': '🔫',
+                        'IMPEDIMENTOS': '⚠️',
+                        'FALTAS_COMETIDAS': '🙅',
+                        'FALTAS_RECEBIDAS': '👂',
+                        'CANETAS': '🍌',
+                        'CHAPEUS': '🎩',
+                        'DRIBLES_SIMPLES': '🎪'
+                      }
+                      const acaoLabels: { [key: string]: string } = {
+                        'GOLS': 'Gol',
+                        'ASSISTENCIAS': 'Assistência',
+                        'CARTOES_AMARELOS': 'Cartão amarelo',
+                        'CARTOES_VERMELHOS': 'Cartão vermelho',
+                        'FINALIZACOES': 'Finalização',
+                        'IMPEDIMENTOS': 'Impedimento',
+                        'FALTAS_COMETIDAS': 'Falta cometida',
+                        'FALTAS_RECEBIDAS': 'Falta recebida',
+                        'CANETAS': 'Caneta',
+                        'CHAPEUS': 'Chapéu',
+                        'DRIBLES_SIMPLES': 'Drible'
+                      }
+                      const isNegative = regra.valor < 0
+                      return (
+                        <div key={regra.id} className="p-3 bg-muted rounded flex justify-between items-center">
+                          <span>{acaoIcones[regra.acao] || '•'} {acaoLabels[regra.acao] || regra.acao}</span>
+                          <span className={`font-bold ${isNegative ? 'text-red-400' : 'text-green-400'}`}>
+                            {isNegative ? '' : '+'}{regra.valor}
+                          </span>
+                        </div>
+                      )
+                    })}
                   </div>
-
-                  <div className="p-3 bg-muted rounded flex justify-between">
-                    <span>🎯 Assistência</span>
-                    <span className="font-bold text-green-400">+5</span>
-                  </div>
-
-                  <div className="p-3 bg-muted rounded flex justify-between">
-                    <span>🟨 Cartão amarelo</span>
-                    <span className="font-bold text-red-400">-2</span>
-                  </div>
-
-                  <div className="p-3 bg-muted rounded flex justify-between">
-                    <span>🟥 Cartão vermelho</span>
-                    <span className="font-bold text-red-500">-5</span>
-                  </div>
                 </div>
-              </div>
+              ) : (
+                <p className="text-muted-foreground">Nenhuma regra configurada para esta liga.</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* SCOUTS */}
         <TabsContent value="scouts">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top jogadores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Em breve: estatísticas dos melhores jogadores
-              </p>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            {/* FILTRO DE RODADA */}
+            <div className="flex gap-2 items-center flex-wrap">
+              <Button
+                variant={tipoRanking === 'geral' ? 'default' : 'outline'}
+                onClick={() => setTipoRanking('geral')}
+              >
+                Geral
+              </Button>
+
+              <Button
+                variant={tipoRanking === 'rodada' ? 'default' : 'outline'}
+                onClick={() => setTipoRanking('rodada')}
+              >
+                Rodada
+              </Button>
+
+              {tipoRanking === 'rodada' && (
+                <Select value={rodadaSelecionada.toString()} onValueChange={(v) => setRodadaSelecionada(v === 'todas' ? 'todas' : Number(v))}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rodasLiga.map(rodada => (
+                      <SelectItem key={rodada.id} value={rodada.numero.toString()}>
+                        Rodada {rodada.numero}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* TABELA DE ARTILHARIA */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Artilharia</CardTitle>
+                <CardDescription>Gols marcados pelos atletas</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Atleta</TableHead>
+                      <TableHead>Clube</TableHead>
+                      <TableHead className="text-right">Gols</TableHead>
+                      <TableHead className="text-right">Assistências</TableHead>
+                      <TableHead className="text-right">Finalizações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockDesempenhoAtleta
+                      .filter(d => tipoRanking === 'rodada' && rodadaSelecionada !== 'todas'
+                        ? d.idRodada === Number(rodadaSelecionada)
+                        : true
+                      )
+                      .sort((a, b) => b.gols - a.gols)
+                      .map((desempenho) => {
+                        const atleta = mockAtletas.find(a => a.id === desempenho.idAtleta)
+                        const clube = mockClubes.find(c => c.id === atleta?.idClube)
+                        return (
+                          <TableRow key={desempenho.id}>
+                            <TableCell className="font-medium">{atleta?.nome}</TableCell>
+                            <TableCell>{clube?.nome}</TableCell>
+                            <TableCell className="text-right font-bold text-primary">{desempenho.gols}</TableCell>
+                            <TableCell className="text-right">{desempenho.assistencias}</TableCell>
+                            <TableCell className="text-right">{desempenho.finalizacoes}</TableCell>
+                          </TableRow>
+                        )
+                      })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* TABELA DE ESTATÍSTICAS COMPLETAS */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Estatísticas Completas</CardTitle>
+                <CardDescription>Desempenho geral dos atletas</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Atleta</TableHead>
+                      <TableHead className="text-right">Gols</TableHead>
+                      <TableHead className="text-right">Assist</TableHead>
+                      <TableHead className="text-right">Dribles</TableHead>
+                      <TableHead className="text-right">Canetas</TableHead>
+                      <TableHead className="text-right">Cartões</TableHead>
+                      <TableHead className="text-right">Pontos</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockDesempenhoAtleta
+                      .filter(d => tipoRanking === 'rodada' && rodadaSelecionada !== 'todas'
+                        ? d.idRodada === Number(rodadaSelecionada)
+                        : true
+                      )
+                      .sort((a, b) => b.pontosCalculados - a.pontosCalculados)
+                      .map((desempenho) => {
+                        const atleta = mockAtletas.find(a => a.id === desempenho.idAtleta)
+                        const cartoes = desempenho.cartoesAmarelos + desempenho.cartoesVermelhos
+                        return (
+                          <TableRow key={desempenho.id}>
+                            <TableCell className="font-medium">{atleta?.nome}</TableCell>
+                            <TableCell className="text-right">{desempenho.gols}</TableCell>
+                            <TableCell className="text-right">{desempenho.assistencias}</TableCell>
+                            <TableCell className="text-right">{desempenho.driblesSimples}</TableCell>
+                            <TableCell className="text-right">{desempenho.caneta}</TableCell>
+                            <TableCell className="text-right text-red-400">{cartoes}</TableCell>
+                            <TableCell className="text-right font-bold text-primary">{desempenho.pontosCalculados}</TableCell>
+                          </TableRow>
+                        )
+                      })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
       </Tabs>

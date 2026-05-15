@@ -348,29 +348,45 @@ export const mockDesempenhoEquipeFantasy = [
   {
     id: 1,
     pontuacaoEquipeFantasy: 25.5,
+    pontuacaoRodada: 25.5,
     pontuacaoTotalEquipeFantasy: 25.5,
-    idDesempenhoAtleta: 1
+    idDesempenhoAtleta: 1,
+    idRodada: 1,
+    idLiga: 1,
+    idEquipeFantasy: 1
   },
 
   {
     id: 2,
     pontuacaoEquipeFantasy: 12.0,
+    pontuacaoRodada: 12.0,
     pontuacaoTotalEquipeFantasy: 37.5,
-    idDesempenhoAtleta: 2
+    idDesempenhoAtleta: 2,
+    idRodada: 1,
+    idLiga: 1,
+    idEquipeFantasy: 1
   },
 
   {
     id: 3,
     pontuacaoEquipeFantasy: 8.5,
+    pontuacaoRodada: 8.5,
     pontuacaoTotalEquipeFantasy: 46.0,
-    idDesempenhoAtleta: 3
+    idDesempenhoAtleta: 3,
+    idRodada: 2,
+    idLiga: 1,
+    idEquipeFantasy: 2
   },
 
   {
     id: 4,
     pontuacaoEquipeFantasy: 15.5,
+    pontuacaoRodada: 15.5,
     pontuacaoTotalEquipeFantasy: 15.5,
-    idDesempenhoAtleta: 1
+    idDesempenhoAtleta: 1,
+    idRodada: 1,
+    idLiga: 2,
+    idEquipeFantasy: 2
   }
 ]
 
@@ -380,6 +396,7 @@ export const mockEquipeLiga = [
     id: 1,
     idLiga: 1,
     patrimonio: 120.0,
+    pontuacaoTotal: 25.5,
     idEquipeFantasy: 1
   },
 
@@ -387,6 +404,7 @@ export const mockEquipeLiga = [
     id: 2,
     idLiga: 2,
     patrimonio: 100.0,
+    pontuacaoTotal: 15.5,
     idEquipeFantasy: 2
   },
 
@@ -394,6 +412,7 @@ export const mockEquipeLiga = [
     id: 3,
     idLiga: 3,
     patrimonio: 110.0,
+    pontuacaoTotal: 0,
     idEquipeFantasy: 3
   },
 
@@ -401,6 +420,7 @@ export const mockEquipeLiga = [
     id: 4,
     idLiga: 1,
     patrimonio: 95.0,
+    pontuacaoTotal: 8.5,
     idEquipeFantasy: 2
   }
 ]

@@ -15,7 +15,7 @@ import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga } from '
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
-import { layoutsCampo, layoutsFutsal, layoutsFut7, tiposJogo, posicaoLabels, posicaoColors, layoutsPorTipo } from '@/lib/escalao-config'
+import { layoutsPorTipo, tiposJogo, posicaoLabels, posicaoColors } from '@/lib/escalao-config'
 
 type JogadorEscalado = {
   id: number
@@ -25,11 +25,6 @@ type JogadorEscalado = {
   clube: string
   isCapitao: boolean
   pontuacao?: number
-}
-
-type FormacaoTatica = {
-  nome: string
-  estrutura: Partial<Record<Atleta['posicao'], number>>
 }
 
 /* ================= MOCKS ================= */

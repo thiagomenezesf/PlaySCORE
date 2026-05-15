@@ -39,6 +39,7 @@ export default function GerenciarCampeonatoPage() {
   const [activeTab, setActiveTab] = useState('info')
   const [novoClube, setNovoClube] = useState({ nome: '', sigla: '', logo: '' })
   const [novoAtleta, setNovoAtleta] = useState({ nome: '', posicao: '', precoInicial: '', clubeId: '', foto: '' })
+  const [clubeFiltro, setClubeFilro] = useState<number | 'ALL'>('ALL')
 
   if (!campeonato) {
     return <div className="p-6">Campeonato não encontrado</div>
@@ -47,6 +48,7 @@ export default function GerenciarCampeonatoPage() {
   const isOwner = campeonato.idUsuario === user?.id
   const clubes = (mockClubes as Clube[]).filter((clube) => clube.idCampeonato === campeonato.id)
   const atletas = (mockAtletas as Atleta[]).filter((atleta) => clubes.some((clube) => clube.id === atleta.idClube))
+  const atletasFiltrados = clubeFiltro === 'ALL' ? atletas : atletas.filter(a => a.idClube === clubeFiltro)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -315,6 +317,23 @@ export default function GerenciarCampeonatoPage() {
         </TabsContent>
 
         <TabsContent value="atletas" className="space-y-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-sm font-medium">Filtrar por clube:</span>
+            <Select value={clubeFiltro.toString()} onValueChange={(value) => setClubeFilro(value === 'ALL' ? 'ALL' : Number(value))}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Selecione um clube" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Todos os clubes</SelectItem>
+                {clubes.map((clube) => (
+                  <SelectItem key={clube.id} value={clube.id.toString()}>
+                    {clube.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <Card>
             <CardHeader>
               <CardTitle>Adicionar Novo Atleta</CardTitle>
@@ -453,7 +472,7 @@ export default function GerenciarCampeonatoPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {atletas.map((atleta) => {
+                  {atletasFiltrados.map((atleta) => {
                     const clube = clubes.find((c) => c.id === atleta.idClube)
                     return (
                       <TableRow key={atleta.id}>
