@@ -40,6 +40,10 @@ export default function GerenciarLigaPage() {
     })
   }
 
+  const [selectedAcoes, setSelectedAcoes] = useState<string[]>(
+    Object.keys(regrasPorAcao)
+  )
+
   const acoesPontuacao = [
     { id: 'GOLS', nome: 'Gol', descricao: 'Pontos por gol marcado' },
     { id: 'ASSISTENCIAS', nome: 'Assistência', descricao: 'Pontos por assistência' },
@@ -50,7 +54,6 @@ export default function GerenciarLigaPage() {
     { id: 'CHAPEUS', nome: 'Chapéus', descricao: 'Pontos por chapéu' },
     { id: 'DRIBLES_SIMPLES', nome: 'Dribles', descricao: 'Pontos por drible' },
   ]
-  const selectedAcoes = Object.keys(regrasPorAcao)
 
   if (!liga) {
     return <div className="p-6">Liga não encontrada</div>
@@ -99,149 +102,149 @@ export default function GerenciarLigaPage() {
 
         <TabsContent value="info" className="space-y-6">
           <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              Dados da Liga
-            </CardTitle>
-            <CardDescription>Edite o nome, descrição e o campeonato vinculado.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="nome">Nome da Liga</FieldLabel>
-                  <Input
-                    id="nome"
-                    value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    disabled={!isOwner}
-                    required
-                  />
-                </Field>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Dados da Liga
+                </CardTitle>
+                <CardDescription>Edite o nome, descrição e o campeonato vinculado.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="nome">Nome da Liga</FieldLabel>
+                      <Input
+                        id="nome"
+                        value={formData.nome}
+                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                        disabled={!isOwner}
+                        required
+                      />
+                    </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="descricao">Descrição</FieldLabel>
-                  <Textarea
-                    id="descricao"
-                    rows={4}
-                    value={formData.descricao}
-                    onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                    disabled={!isOwner}
-                  />
-                </Field>
+                    <Field>
+                      <FieldLabel htmlFor="descricao">Descrição</FieldLabel>
+                      <Textarea
+                        id="descricao"
+                        rows={4}
+                        value={formData.descricao}
+                        onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                        disabled={!isOwner}
+                      />
+                    </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="campeonato">Campeonato</FieldLabel>
-                  <Select
-                    value={formData.idCampeonato}
-                    onValueChange={(value) => setFormData({ ...formData, idCampeonato: value })}
-                    disabled={!isOwner}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um campeonato" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockCampeonatos.map((camp) => (
-                        <SelectItem key={camp.id} value={camp.id.toString()}>
-                          {camp.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
+                    <Field>
+                      <FieldLabel htmlFor="campeonato">Campeonato</FieldLabel>
+                      <Select
+                        value={formData.idCampeonato}
+                        onValueChange={(value) => setFormData({ ...formData, idCampeonato: value })}
+                        disabled={!isOwner}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um campeonato" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mockCampeonatos.map((camp) => (
+                            <SelectItem key={camp.id} value={camp.id.toString()}>
+                              {camp.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="maxParticipantes">Máximo de Participantes</FieldLabel>
-                  <Input
-                    id="maxParticipantes"
-                    type="number"
-                    min={2}
-                    value={formData.maxParticipantes}
-                    onChange={(e) => setFormData({ ...formData, maxParticipantes: e.target.value })}
-                    disabled={!isOwner}
-                  />
-                </Field>
+                    <Field>
+                      <FieldLabel htmlFor="maxParticipantes">Máximo de Participantes</FieldLabel>
+                      <Input
+                        id="maxParticipantes"
+                        type="number"
+                        min={2}
+                        value={formData.maxParticipantes}
+                        onChange={(e) => setFormData({ ...formData, maxParticipantes: e.target.value })}
+                        disabled={!isOwner}
+                      />
+                    </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="codigoAcesso">Código de Acesso</FieldLabel>
-                  <Input
-                    id="codigoAcesso"
-                    value={formData.codigoAcesso}
-                    onChange={(e) => setFormData({ ...formData, codigoAcesso: e.target.value })}
-                    disabled={!isOwner}
-                    required
-                  />
-                </Field>
-              </FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="codigoAcesso">Código de Acesso</FieldLabel>
+                      <Input
+                        id="codigoAcesso"
+                        value={formData.codigoAcesso}
+                        onChange={(e) => setFormData({ ...formData, codigoAcesso: e.target.value })}
+                        disabled={!isOwner}
+                        required
+                      />
+                    </Field>
+                  </FieldGroup>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button type="button" variant="outline" onClick={() => navigate(`/ligas/${liga.id}`)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={!isOwner} className="w-full sm:w-auto">
-                  Salvar Alterações
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <Button type="button" variant="outline" onClick={() => navigate(`/ligas/${liga.id}`)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" disabled={!isOwner} className="w-full sm:w-auto">
+                      Salvar Alterações
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
 
-        <div className="space-y-4">
-          <Card className="space-y-3">
-            <CardHeader>
-              <CardTitle>Resumo da Liga</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Código de Acesso</p>
-                  <p className="font-medium">{liga.codigoAcesso}</p>
-                </div>
-                <Button variant="outline" size="sm" onClick={handleCopyCode}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  {copied ? 'Copiado' : 'Copiar'}
-                </Button>
-              </div>
+            <div className="space-y-4">
+              <Card className="space-y-3">
+                <CardHeader>
+                  <CardTitle>Resumo da Liga</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Código de Acesso</p>
+                      <p className="font-medium">{liga.codigoAcesso}</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleCopyCode}>
+                      <Copy className="mr-2 h-4 w-4" />
+                      {copied ? 'Copiado' : 'Copiar'}
+                    </Button>
+                  </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Campeonato</span>
-                  <span>{campeonato?.nome ?? 'Não vinculado'}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Participantes</span>
-                  <span>{participantes}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Equipes</span>
-                  <span>{equipes.length}/{liga.maxParticipantes}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Status</span>
-                  <Badge variant="secondary">Ativa</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Campeonato</span>
+                      <span>{campeonato?.nome ?? 'Não vinculado'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Participantes</span>
+                      <span>{participantes}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Equipes</span>
+                      <span>{equipes.length}/{liga.maxParticipantes}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Status</span>
+                      <Badge variant="secondary">Ativa</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Permissão</CardTitle>
-              <CardDescription>
-                {isOwner ? 'Você é o criador desta liga.' : 'Apenas o criador pode editar os dados da liga.'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" />
-                <span>{isOwner ? 'Proprietário' : 'Somente leitura'}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Permissão</CardTitle>
+                  <CardDescription>
+                    {isOwner ? 'Você é o criador desta liga.' : 'Apenas o criador pode editar os dados da liga.'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" />
+                    <span>{isOwner ? 'Proprietário' : 'Somente leitura'}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="regras" className="space-y-6">
@@ -262,17 +265,49 @@ export default function GerenciarLigaPage() {
                     As ações selecionadas abaixo são as ativas para esta liga. Para adicionar/remover ações, edite a liga.
                   </p>
                   <div className="grid gap-2">
-                    {acoesPontuacao.map((acao) => (
-                      <div key={acao.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
-                        <div>
-                          <p className="font-medium text-sm">{acao.nome}</p>
-                          <p className="text-xs text-muted-foreground">{acao.descricao}</p>
-                        </div>
-                        {selectedAcoes.includes(acao.id) && (
-                          <Badge variant="secondary">{regrasPorAcao[acao.id]} pts</Badge>
-                        )}
-                      </div>
-                    ))}
+                    {acoesPontuacao.map((acao) => {
+                      const isSelected = selectedAcoes.includes(acao.id)
+
+                      return (
+                        <button
+                          type="button"
+                          key={acao.id}
+                          disabled={!isOwner}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedAcoes(
+                                selectedAcoes.filter((id) => id !== acao.id)
+                              )
+                            } else {
+                              setSelectedAcoes([
+                                ...selectedAcoes,
+                                acao.id
+                              ])
+                            }
+                          }}
+                          className={`flex items-center justify-between p-3 border rounded-lg transition-all text-left
+          ${isSelected
+                              ? 'border-primary bg-primary/10'
+                              : 'bg-muted/30 hover:border-primary/50'
+                            }
+        `}
+                        >
+                          <div>
+                            <p className="font-medium text-sm">{acao.nome}</p>
+
+                            <p className="text-xs text-muted-foreground">
+                              {acao.descricao}
+                            </p>
+                          </div>
+
+                          {isSelected && (
+                            <Badge variant="secondary">
+                              {regrasPorAcao[acao.id] ?? 0} pts
+                            </Badge>
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 

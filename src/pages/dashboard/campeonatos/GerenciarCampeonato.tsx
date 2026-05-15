@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Shield, Upload, Users, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Shield, Upload, Users, Plus, Trash2, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -41,6 +41,24 @@ export default function GerenciarCampeonatoPage() {
   const [novoAtleta, setNovoAtleta] = useState({ nome: '', posicao: '', precoInicial: '', clubeId: '', foto: '' })
   const [clubeFiltro, setClubeFilro] = useState<number | 'ALL'>('ALL')
 
+  const [editingClubeId, setEditingClubeId] = useState<number | null>(null)
+
+  const [editClube, setEditClube] = useState({
+    nome: '',
+    sigla: '',
+    logo: '',
+  })
+
+  const [editingAtletaId, setEditingAtletaId] = useState<number | null>(null)
+
+  const [editAtleta, setEditAtleta] = useState({
+    nome: '',
+    posicao: '',
+    precoInicial: '',
+    clubeId: '',
+    foto: '',
+  })
+
   if (!campeonato) {
     return <div className="p-6">Campeonato não encontrado</div>
   }
@@ -63,9 +81,43 @@ export default function GerenciarCampeonatoPage() {
     setNovoClube({ nome: '', sigla: '', logo: '' })
   }
 
+  const handleEditClube = (clube: Clube) => {
+    setEditingClubeId(clube.id)
+
+    setEditClube({
+      nome: clube.nome,
+      sigla: clube.sigla ?? '',
+      logo: clube.logo ?? '',
+    })
+  }
+
+  const handleSaveClube = () => {
+    console.log('Salvando clube:', editClube)
+
+    setEditingClubeId(null)
+  }
+
   const handleAddAtleta = () => {
     console.log('Adicionando atleta:', novoAtleta)
     setNovoAtleta({ nome: '', posicao: '', precoInicial: '', clubeId: '', foto: '' })
+  }
+
+  const handleEditAtleta = (atleta: Atleta) => {
+    setEditingAtletaId(atleta.id)
+
+    setEditAtleta({
+      nome: atleta.nome,
+      posicao: atleta.posicao,
+      precoInicial: atleta.precoInicial.toString(),
+      clubeId: atleta.idClube.toString(),
+      foto: atleta.foto ?? '',
+    })
+  }
+
+  const handleSaveAtleta = () => {
+    console.log('Salvando atleta:', editAtleta)
+
+    setEditingAtletaId(null)
   }
 
   return (
@@ -233,42 +285,42 @@ export default function GerenciarCampeonatoPage() {
                 </Field>
 
                 <Field>
-                    <FieldLabel>Foto do Clube (opcional)</FieldLabel>
+                  <FieldLabel>Foto do Clube (opcional)</FieldLabel>
 
-                    <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer block">
-                        <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+                  <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer block">
+                    <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
 
-                        <p className="text-xs text-muted-foreground">
-                        Clique para fazer upload
-                        </p>
+                    <p className="text-xs text-muted-foreground">
+                      Clique para fazer upload
+                    </p>
 
-                        <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        disabled={!isOwner}
-                        onChange={(e) => {
-                            const file = e.target.files?.[0]
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!isOwner}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
 
-                            if (file) {
-                            const imageUrl = URL.createObjectURL(file)
+                        if (file) {
+                          const imageUrl = URL.createObjectURL(file)
 
-                            setNovoClube({
-                                ...novoClube,
-                                logo: imageUrl,
-                            })
-                            }
-                        }}
-                        />
-                    </label>
+                          setNovoClube({
+                            ...novoClube,
+                            logo: imageUrl,
+                          })
+                        }
+                      }}
+                    />
+                  </label>
 
-                    {novoClube.logo && (
-                        <img
-                        src={novoClube.logo}
-                        alt="Preview do clube"
-                        className="mt-4 h-24 w-24 object-cover rounded-lg border"
-                        />
-                    )}
+                  {novoClube.logo && (
+                    <img
+                      src={novoClube.logo}
+                      alt="Preview do clube"
+                      className="mt-4 h-24 w-24 object-cover rounded-lg border"
+                    />
+                  )}
                 </Field>
 
                 <Button onClick={handleAddClube} disabled={!isOwner || !novoClube.nome}>
@@ -303,15 +355,112 @@ export default function GerenciarCampeonatoPage() {
                         <TableCell>{clube.sigla ?? '-'}</TableCell>
                         <TableCell className="text-right">{atletaCount}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" disabled={!isOwner}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={!isOwner}
+                              onClick={() => handleEditClube(clube)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+
+                            <Button variant="ghost" size="sm" disabled={!isOwner}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     )
                   })}
                 </TableBody>
               </Table>
+              {editingClubeId && (
+                <div className="mt-6 border rounded-lg p-4 space-y-4">
+                  <h3 className="font-semibold">Editar Clube</h3>
+
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel>Nome</FieldLabel>
+
+                      <Input
+                        value={editClube.nome}
+                        onChange={(e) =>
+                          setEditClube({
+                            ...editClube,
+                            nome: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel>Sigla</FieldLabel>
+
+                      <Input
+                        value={editClube.sigla}
+                        onChange={(e) =>
+                          setEditClube({
+                            ...editClube,
+                            sigla: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel>Foto do Clube</FieldLabel>
+
+                      <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer block">
+                        <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+
+                        <p className="text-xs text-muted-foreground">
+                          Clique para fazer upload
+                        </p>
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+
+                            if (file) {
+                              const imageUrl = URL.createObjectURL(file)
+
+                              setEditClube({
+                                ...editClube,
+                                logo: imageUrl,
+                              })
+                            }
+                          }}
+                        />
+                      </label>
+
+                      {editClube.logo && (
+                        <img
+                          src={editClube.logo}
+                          alt="Preview"
+                          className="mt-4 h-24 w-24 object-cover rounded-lg border"
+                        />
+                      )}
+                    </Field>
+
+                    <div className="flex gap-2">
+                      <Button onClick={handleSaveClube}>
+                        Salvar
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onClick={() => setEditingClubeId(null)}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </FieldGroup>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -352,7 +501,7 @@ export default function GerenciarCampeonatoPage() {
                   />
                 </Field>
 
-                  NAO ESTA DINAMICO
+                NAO ESTA DINAMICO
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field>
                     <FieldLabel htmlFor="atletaPosicao">Posição</FieldLabel>
@@ -409,42 +558,42 @@ export default function GerenciarCampeonatoPage() {
                 </Field>
 
                 <Field>
-                    <FieldLabel>Foto do Atleta (opcional)</FieldLabel>
+                  <FieldLabel>Foto do Atleta (opcional)</FieldLabel>
 
-                    <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer block">
-                        <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+                  <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer block">
+                    <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
 
-                        <p className="text-xs text-muted-foreground">
-                        Clique para fazer upload
-                        </p>
+                    <p className="text-xs text-muted-foreground">
+                      Clique para fazer upload
+                    </p>
 
-                        <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        disabled={!isOwner}
-                        onChange={(e) => {
-                            const file = e.target.files?.[0]
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!isOwner}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
 
-                            if (file) {
-                            const imageUrl = URL.createObjectURL(file)
+                        if (file) {
+                          const imageUrl = URL.createObjectURL(file)
 
-                            setNovoAtleta({
-                                ...novoAtleta,
-                                foto: imageUrl,
-                            })
-                            }
-                        }}
-                        />
-                    </label>
+                          setNovoAtleta({
+                            ...novoAtleta,
+                            foto: imageUrl,
+                          })
+                        }
+                      }}
+                    />
+                  </label>
 
-                    {novoAtleta.foto && (
-                        <img
-                        src={novoAtleta.foto}
-                        alt="Preview do atleta"
-                        className="mt-4 h-24 w-24 object-cover rounded-lg border"
-                        />
-                    )}
+                  {novoAtleta.foto && (
+                    <img
+                      src={novoAtleta.foto}
+                      alt="Preview do atleta"
+                      className="mt-4 h-24 w-24 object-cover rounded-lg border"
+                    />
+                  )}
                 </Field>
 
                 <Button onClick={handleAddAtleta} disabled={!isOwner || !novoAtleta.nome || !novoAtleta.posicao || !novoAtleta.clubeId}>
@@ -481,15 +630,113 @@ export default function GerenciarCampeonatoPage() {
                         <TableCell>{clube?.nome ?? '-'}</TableCell>
                         <TableCell className="text-right">C$ {atleta.precoInicial}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" disabled={!isOwner}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={!isOwner}
+                              onClick={() => handleEditAtleta(atleta)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+
+                            <Button variant="ghost" size="sm" disabled={!isOwner}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     )
                   })}
                 </TableBody>
               </Table>
+              {editingAtletaId && (
+                <div className="mt-6 border rounded-lg p-4 space-y-4">
+                  <h3 className="font-semibold">Editar Atleta</h3>
+
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel>Nome</FieldLabel>
+
+                      <Input
+                        value={editAtleta.nome}
+                        onChange={(e) =>
+                          setEditAtleta({
+                            ...editAtleta,
+                            nome: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel>Preço Inicial</FieldLabel>
+
+                      <Input
+                        type="number"
+                        value={editAtleta.precoInicial}
+                        onChange={(e) =>
+                          setEditAtleta({
+                            ...editAtleta,
+                            precoInicial: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel>Foto do Atleta</FieldLabel>
+
+                      <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer block">
+                        <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+
+                        <p className="text-xs text-muted-foreground">
+                          Clique para fazer upload
+                        </p>
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+
+                            if (file) {
+                              const imageUrl = URL.createObjectURL(file)
+
+                              setEditAtleta({
+                                ...editAtleta,
+                                foto: imageUrl,
+                              })
+                            }
+                          }}
+                        />
+                      </label>
+
+                      {editAtleta.foto && (
+                        <img
+                          src={editAtleta.foto}
+                          alt="Preview"
+                          className="mt-4 h-24 w-24 object-cover rounded-lg border"
+                        />
+                      )}
+                    </Field>
+
+                    <div className="flex gap-2">
+                      <Button onClick={handleSaveAtleta}>
+                        Salvar
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onClick={() => setEditingAtletaId(null)}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </FieldGroup>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
