@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/use-auth'
-import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga } from '@/mocks/database'
+import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga, mockAtletas, mockClubes } from '@/mocks/database'
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
@@ -26,38 +26,15 @@ type JogadorEscalado = {
   clube: string
   isCapitao: boolean
   pontuacao?: number
+  foto?: string
 }
 
 /* ================= MOCKS ================= */
-
-// Será definido dinamicamente baseado na Liga acessada
-
-/* ================= ESQUEMAS TÁTICOS DISPONÍVEIS EM CADA "TIPO DE JOGO" ================ */
-
-
-
-// configJogo será definido dentro do componente baseado no tipo de jogo
 
 // 🔥 MOCK pontuação jogador
 const getPontuacaoJogador = (_id: number) => {
   return Number((Math.random() * 10).toFixed(2))
 }
-
-const mockMercado: Atleta[] = [
-  { id: 12, nome: 'Gabriel Nunes', foto: 'https://i.pravatar.cc/150?img=12', posicao: 'GOL', precoInicial: 8.5, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(12) },
-  { id: 13, nome: 'Rafael Costa', foto: 'https://i.pravatar.cc/150?img=13', posicao: 'ZAG', precoInicial: 7.0, idClube: 2, clube: { id: 2, nome: 'Corinthians da Varzea', logo: 'https://i.pravatar.cc/100?img=12', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(13) },
-  { id: 14, nome: 'Lucas Freitas', foto: 'https://i.pravatar.cc/150?img=14', posicao: 'ZAG', precoInicial: 7.0, idClube: 2, clube: { id: 2, nome: 'Corinthians da Varzea', logo: 'https://i.pravatar.cc/100?img=12', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(14) },
-  { id: 15, nome: 'Leandro Silva', foto: 'https://i.pravatar.cc/150?img=15', posicao: 'LAT', precoInicial: 6.0, idClube: 3, clube: { id: 3, nome: 'Santos Amador', logo: 'https://i.pravatar.cc/100?img=13', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(15) },
-  { id: 16, nome: 'Joao Miguel', foto: 'https://i.pravatar.cc/150?img=16', posicao: 'LAT', precoInicial: 6.0, idClube: 3, clube: { id: 3, nome: 'Santos Amador', logo: 'https://i.pravatar.cc/100?img=13', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(16) },
-  { id: 17, nome: 'Fabio Mendes', foto: 'https://i.pravatar.cc/150?img=17', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(17) },
-  { id: 18, nome: 'Felipe Melo', foto: 'https://i.pravatar.cc/150?img=18', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(18) },
-  { id: 19, nome: 'Rogerio Cips', foto: 'https://i.pravatar.cc/150?img=19', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(19) },
-  { id: 20, nome: 'Henrique Lima', foto: 'https://i.pravatar.cc/150?img=20', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(20) },
-  { id: 21, nome: 'Diego Santos', foto: 'https://i.pravatar.cc/150?img=21', posicao: 'ATA', precoInicial: 10.0, idClube: 5, clube: { id: 5, nome: 'Flamengo Amador', logo: 'https://i.pravatar.cc/100?img=15', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(21) },
-  { id: 22, nome: 'Leo Lima', foto: 'https://i.pravatar.cc/150?img=22', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(22) },
-  { id: 23, nome: 'Bruno Geison', foto: 'https://i.pravatar.cc/150?img=23', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(23) },
-  { id: 24, nome: 'Meia Geison', foto: 'https://i.pravatar.cc/150?img=24', posicao: 'MEI', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(24) }
-]
 
 export default function EscalacaoPage() {
   const { user } = useAuth()
@@ -72,9 +49,20 @@ export default function EscalacaoPage() {
   const equipeFantasy = mockEquipesFantasy.find(equipe => equipe.idUsuario === user?.id)
   const equipeLiga = liga && equipeFantasy ? mockEquipeLiga.find(el => el.idLiga === liga.id && el.idEquipeFantasy === equipeFantasy.id) : null
   
-  // Determinar configuração do jogo baseado no campeonato
-  const tipoJogo = (campeonato?.tipoJogo as 'CAMPO' | 'FUTSAL' | 'FUT7') || 'CAMPO'
-  const configJogo = tiposJogo[tipoJogo]
+  // Preparar mercado com atletas do database
+  const mercado = mockAtletas.map(atleta => {
+    const clube = mockClubes.find(c => c.id === atleta.idClube)
+    return {
+      ...atleta,
+      clube: {
+        id: clube?.id || 0,
+        nome: clube?.nome || 'Clube Desconhecido',
+        logo: clube?.logo || 'https://i.pravatar.cc/100?img=99',
+        idCampeonato: clube?.idCampeonato || 1
+      },
+      pontuacao: getPontuacaoJogador(atleta.id)
+    } as Atleta & { clube: any; pontuacao: number }
+  })
   
   // Loading states
   if (!user) {
@@ -89,6 +77,10 @@ export default function EscalacaoPage() {
     return <div className="p-6">Campeonato não encontrado</div>
   }
 
+  // Determinar configuração do jogo baseado no campeonato
+  const tipoJogo = (campeonato?.tipoJogo as 'CAMPO' | 'FUTSAL' | 'FUT7') || 'CAMPO'
+  const configJogo = tiposJogo[tipoJogo]
+
   const mockMeuTime = {
     nome: equipeFantasy?.nome || 'Meu Time FC',
     patrimonio: equipeLiga?.patrimonio || 100,
@@ -97,16 +89,13 @@ export default function EscalacaoPage() {
   }
 
   const [searchTerm, setSearchTerm] = useState('')
-  const [formacao, setFormacao] = useState(
-  configJogo.formacoes[0]
-)
+  const [formacao, setFormacao] = useState(configJogo.formacoes[0])
 
-const layoutAtual =
-  layoutsPorTipo[tipoJogo][formacao.nome]
+  const layoutAtual = layoutsPorTipo[tipoJogo][formacao.nome]
 
-    if (!layoutAtual) {
-  return <div>Layout não encontrado</div>
-}
+  if (!layoutAtual) {
+    return <div>Layout não encontrado</div>
+  }
 
   const [time, setTime] = useState(mockMeuTime)
 
@@ -183,13 +172,13 @@ const layoutAtual =
   const getJogadores = (pos: Atleta['posicao']) =>
     time.escalados.filter(a => a.posicao === pos)
 
-  const mercadoFiltrado = mockMercado
+  const mercadoFiltrado = mercado
     .filter(a => a.nome.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(a => posicaoFiltro === 'ALL' || a.posicao === posicaoFiltro)
 
   const posicoesDisponiveis = Array.from(
-    new Set(mockMercado.map(a => a.posicao))
-  )
+    new Set(mercado.map(a => a.posicao))
+  ) as Atleta['posicao'][]
 
   const handleSelecionarSlot = (pos: Atleta['posicao']) => {
     setSlotSelecionado(pos)

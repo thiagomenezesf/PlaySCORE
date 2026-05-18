@@ -119,30 +119,217 @@ export const mockAtletas = [
   {
     id: 1,
     nome: 'Gabriel Nunes',
-    foto: 'https://a1.espncdn.com/combiner/i?img=%2Fi%2Fleaguelogos%2Fsoccer%2F500%2F23.png',
+    foto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGv0ZIrLidHrXmxdSY38qwW3_FyQZhJo-sFQ&s',
     posicao: 'GOL',
     precoInicial: 8.5,
     idClube: 1,
     idDesempenhoAtleta: 1
   },
-
   {
     id: 2,
     nome: 'Lucas Silva',
-    foto: undefined,
+    foto: 'https://i.pravatar.cc/150?img=2',
     posicao: 'ATA',
     precoInicial: 12,
     idClube: 1,
     idDesempenhoAtleta: 2
   },
-
   {
     id: 3,
     nome: 'Rafael Costa',
-    foto: undefined,
+    foto: 'https://i.pravatar.cc/150?img=3',
     posicao: 'MEI',
     precoInicial: 9,
     idClube: 2,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 4,
+    nome: 'Carlos Mendes',
+    foto: 'https://i.pravatar.cc/150?img=4',
+    posicao: 'ZAG',
+    precoInicial: 7.0,
+    idClube: 2,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 5,
+    nome: 'João Oliveira',
+    foto: 'https://i.pravatar.cc/150?img=5',
+    posicao: 'LAT',
+    precoInicial: 6.0,
+    idClube: 1,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 6,
+    nome: 'Thiago Pereira',
+    foto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGv0ZIrLidHrXmxdSY38qwW3_FyQZhJo-sFQ&s',
+    posicao: 'MEI',
+    precoInicial: 10.0,
+    idClube: 3,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 7,
+    nome: 'Felipe Gomes',
+    foto: 'https://i.pravatar.cc/150?img=7',
+    posicao: 'ATA',
+    precoInicial: 11.5,
+    idClube: 1,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 8,
+    nome: 'Murilo Santos',
+    foto: 'https://i.pravatar.cc/150?img=8',
+    posicao: 'ZAG',
+    precoInicial: 7.5,
+    idClube: 2,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 9,
+    nome: 'Gustavo Alves',
+    foto: 'https://i.pravatar.cc/150?img=9',
+    posicao: 'LAT',
+    precoInicial: 6.5,
+    idClube: 2,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 10,
+    nome: 'Diego Ferreira',
+    foto: 'https://i.pravatar.cc/150?img=10',
+    posicao: 'MEI',
+    precoInicial: 9.5,
+    idClube: 1,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 11,
+    nome: 'Henrique Lima',
+    foto: 'https://i.pravatar.cc/150?img=11',
+    posicao: 'ATA',
+    precoInicial: 13.0,
+    idClube: 3,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 12,
+    nome: 'Bruno Costa',
+    foto: 'https://i.pravatar.cc/150?img=12',
+    posicao: 'GOL',
+    precoInicial: 8.0,
+    idClube: 2,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 13,
+    nome: 'Pedro Marques',
+    foto: 'https://i.pravatar.cc/150?img=13',
+    posicao: 'ZAG',
+    precoInicial: 7.2,
+    idClube: 1,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 14,
+    nome: 'Leandro Ribeiro',
+    foto: 'https://i.pravatar.cc/150?img=14',
+    posicao: 'LAT',
+    precoInicial: 6.3,
+    idClube: 3,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 15,
+    nome: 'Rodolfo Barbosa',
+    foto: 'https://i.pravatar.cc/150?img=15',
+    posicao: 'MEI',
+    precoInicial: 9.8,
+    idClube: 2,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 16,
+    nome: 'André Souza',
+    foto: 'https://i.pravatar.cc/150?img=16',
+    posicao: 'ATA',
+    precoInicial: 12.5,
+    idClube: 1,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 17,
+    nome: 'Fabio Mendes',
+    foto: 'https://i.pravatar.cc/150?img=17',
+    posicao: 'MEI',
+    precoInicial: 9.0,
+    idClube: 1,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 18,
+    nome: 'Felipe Melo',
+    foto: 'https://i.pravatar.cc/150?img=18',
+    posicao: 'MEI',
+    precoInicial: 9.0,
+    idClube: 1,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 19,
+    nome: 'Rogerio Cips',
+    foto: 'https://i.pravatar.cc/150?img=19',
+    posicao: 'MEI',
+    precoInicial: 9.0,
+    idClube: 1,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 20,
+    nome: 'Diego Santos',
+    foto: 'https://i.pravatar.cc/150?img=20',
+    posicao: 'ATA',
+    precoInicial: 10.0,
+    idClube: 3,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 21,
+    nome: 'Leo Lima',
+    foto: 'https://i.pravatar.cc/150?img=21',
+    posicao: 'ATA',
+    precoInicial: 11.0,
+    idClube: 2,
+    idDesempenhoAtleta: 3
+  },
+  {
+    id: 22,
+    nome: 'Bruno Geison',
+    foto: 'https://i.pravatar.cc/150?img=22',
+    posicao: 'ATA',
+    precoInicial: 11.0,
+    idClube: 2,
+    idDesempenhoAtleta: 1
+  },
+  {
+    id: 23,
+    nome: 'Meia Geison',
+    foto: 'https://i.pravatar.cc/150?img=23',
+    posicao: 'MEI',
+    precoInicial: 11.0,
+    idClube: 2,
+    idDesempenhoAtleta: 2
+  },
+  {
+    id: 24,
+    nome: 'Vitor Santos',
+    foto: 'https://i.pravatar.cc/150?img=24',
+    posicao: 'LAT',
+    precoInicial: 6.8,
+    idClube: 3,
     idDesempenhoAtleta: 3
   }
 ]
