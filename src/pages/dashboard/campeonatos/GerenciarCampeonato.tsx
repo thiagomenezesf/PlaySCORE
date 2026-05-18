@@ -669,6 +669,60 @@ export default function GerenciarCampeonatoPage() {
                       />
                     </Field>
 
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Posição</FieldLabel>
+
+                      <Select
+                        value={editAtleta.posicao}
+                        onValueChange={(value) =>
+                          setEditAtleta({
+                            ...editAtleta,
+                            posicao: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a posição" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          <SelectItem value="GOL">Goleiro</SelectItem>
+                          <SelectItem value="ZAG">Zagueiro</SelectItem>
+                          <SelectItem value="LAT">Lateral</SelectItem>
+                          <SelectItem value="MEI">Meio-campo</SelectItem>
+                          <SelectItem value="ATA">Atacante</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+
+                    <Field>
+                      <FieldLabel>Clube</FieldLabel>
+
+                      <Select
+                        value={editAtleta.clubeId}
+                        onValueChange={(value) =>
+                          setEditAtleta({
+                            ...editAtleta,
+                            clubeId: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um clube" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {clubes.map((clube) => (
+                            <SelectItem key={clube.id} value={clube.id.toString()}>
+                              {clube.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </div>
+
                     <Field>
                       <FieldLabel>Preço Inicial</FieldLabel>
 

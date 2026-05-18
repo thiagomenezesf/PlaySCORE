@@ -19,14 +19,25 @@ const mockCampeonatos = [
 ]
 
 // Ações de pontuação possíveis
+// const acoesPontuacao = [
+//   { id: 'gol', nome: 'Gol', descricao: 'Pontos por gol marcado' },
+//   { id: 'assistencia', nome: 'Assistência', descricao: 'Pontos por assistência' },
+//   { id: 'cartao_amarelo', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
+//   { id: 'cartao_vermelho', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
+//   { id: 'defesa', nome: 'Defesa', descricao: 'Pontos por defesa (goleiro)' },
+//   { id: 'vitoria', nome: 'Vitória', descricao: 'Pontos por vitória do time' },
+// ]
+
 const acoesPontuacao = [
-  { id: 'gol', nome: 'Gol', descricao: 'Pontos por gol marcado' },
-  { id: 'assistencia', nome: 'Assistência', descricao: 'Pontos por assistência' },
-  { id: 'cartao_amarelo', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
-  { id: 'cartao_vermelho', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
-  { id: 'defesa', nome: 'Defesa', descricao: 'Pontos por defesa (goleiro)' },
-  { id: 'vitoria', nome: 'Vitória', descricao: 'Pontos por vitória do time' },
-]
+    { id: 'GOLS', nome: 'Gol', descricao: 'Pontos por gol marcado' },
+    { id: 'ASSISTENCIAS', nome: 'Assistência', descricao: 'Pontos por assistência' },
+    { id: 'CARTOES_AMARELOS', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
+    { id: 'CARTOES_VERMELHOS', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
+    { id: 'FINALIZACOES', nome: 'Finalizações', descricao: 'Pontos por finalização' },
+    { id: 'CANETAS', nome: 'Canetas', descricao: 'Pontos por caneta' },
+    { id: 'CHAPEUS', nome: 'Chapéus', descricao: 'Pontos por chapéu' },
+    { id: 'DRIBLES_SIMPLES', nome: 'Dribles', descricao: 'Pontos por drible' },
+  ]
 
 export default function CriarLigaPage() {
   const navigate = useNavigate()
