@@ -13,6 +13,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const [formData, setFormData] = useState({
     email: '',
     senha: '',
@@ -27,9 +28,17 @@ export default function LoginPage() {
     // TODO: Integrar com Spring Boot via Axios
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const user = mockUsuarios.find((u) => u.email === formData.email) ?? mockUsuarios[0]
-    loginAs(user.id)
+    const user = mockUsuarios.find(
+      (u) => u.email === formData.email && u.senha === formData.senha
+    )
 
+    if (!user) {
+      setError('E-mail ou senha inválidos. Use uma combinação válida.')
+      setIsLoading(false)
+      return
+    }
+
+    loginAs(user.id)
     navigate('/dashboard')
   }
 
@@ -115,6 +124,9 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
                 {isLoading ? 'Entrando...' : 'Entrar'}
               </Button>
+              {error && (
+                <p className="text-sm text-destructive mt-3">{error}</p>
+              )}
               <Button
                 type="button"
                 variant="secondary"

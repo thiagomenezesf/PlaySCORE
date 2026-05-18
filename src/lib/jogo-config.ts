@@ -1,4 +1,4 @@
-import type { Atleta, TipoJogo } from '@/types'
+import type { Atleta, TipoJogo, AcaoPontuacao } from '@/types'
 
 export type FormacaoTatica = {
   nome: string
@@ -63,6 +63,29 @@ export const tiposJogo: Record<TipoJogo, { formacoes: FormacaoTatica[]; ordemCam
     formacoes: formacoes7v7,
     ordemCampo: ['ATA', 'MEI', 'ZAG', 'GOL'],
   },
+}
+
+export type TipoJogoInfo = {
+  label: string
+  jogadores: number
+}
+
+export const tipoJogoInfos: Record<TipoJogo, TipoJogoInfo> = {
+  CAMPO: { label: 'Campo', jogadores: 11 },
+  FUTSAL: { label: 'Futsal', jogadores: 5 },
+  FUT7: { label: 'Fut7', jogadores: 7 },
+}
+
+export const tipoJogoOptions = Object.entries(tipoJogoInfos).map(([value, info]) => ({
+  value: value as TipoJogo,
+  label: `${info.label} (${info.jogadores} jogadores)`,
+  jogadores: info.jogadores,
+}))
+
+export const posicoesPorTipoJogo: Record<TipoJogo, Atleta['posicao'][]> = {
+  CAMPO: ['GOL', 'ZAG', 'LAT', 'MEI', 'ATA'],
+  FUTSAL: ['GOL', 'FIXO', 'ALA', 'PIVO'],
+  FUT7: ['GOL', 'ZAG', 'MEI', 'ATA'],
 }
 
 type Coordenada = {
@@ -388,3 +411,18 @@ export const layoutsPorTipo = {
   FUTSAL: layoutsFutsal,
   FUT7: layoutsFut7
 }
+
+export const acoesPontuacao: Array<{
+  id: AcaoPontuacao
+  nome: string
+  descricao: string
+}> = [
+  { id: 'GOLS', nome: 'Gol', descricao: 'Pontos por gol marcado' },
+  { id: 'ASSISTENCIAS', nome: 'Assistência', descricao: 'Pontos por assistência' },
+  { id: 'CARTOES_AMARELOS', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
+  { id: 'CARTOES_VERMELHOS', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
+  { id: 'FINALIZACOES', nome: 'Finalizações', descricao: 'Pontos por finalização' },
+  { id: 'CANETAS', nome: 'Canetas', descricao: 'Pontos por caneta' },
+  { id: 'CHAPEUS', nome: 'Chapéus', descricao: 'Pontos por chapéu' },
+  { id: 'DRIBLES_SIMPLES', nome: 'Dribles', descricao: 'Pontos por drible' },
+]

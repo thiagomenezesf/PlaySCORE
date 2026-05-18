@@ -10,35 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-
-// Campeonatos mockados
-const mockCampeonatos = [
-  { id: 1, nome: 'Campeonato da Varzea 2024' },
-  { id: 2, nome: 'Copa Universitaria' },
-  { id: 3, nome: 'Liga Amadora do Bairro' },
-]
-
-// Ações de pontuação possíveis
-// const acoesPontuacao = [
-//   { id: 'gol', nome: 'Gol', descricao: 'Pontos por gol marcado' },
-//   { id: 'assistencia', nome: 'Assistência', descricao: 'Pontos por assistência' },
-//   { id: 'cartao_amarelo', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
-//   { id: 'cartao_vermelho', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
-//   { id: 'defesa', nome: 'Defesa', descricao: 'Pontos por defesa (goleiro)' },
-//   { id: 'vitoria', nome: 'Vitória', descricao: 'Pontos por vitória do time' },
-// ]
-
-const acoesPontuacao = [
-    { id: 'GOLS', nome: 'Gol', descricao: 'Pontos por gol marcado' },
-    { id: 'ASSISTENCIAS', nome: 'Assistência', descricao: 'Pontos por assistência' },
-    { id: 'CARTOES_AMARELOS', nome: 'Cartão Amarelo', descricao: 'Pontos por cartão amarelo' },
-    { id: 'CARTOES_VERMELHOS', nome: 'Cartão Vermelho', descricao: 'Pontos por cartão vermelho' },
-    { id: 'FINALIZACOES', nome: 'Finalizações', descricao: 'Pontos por finalização' },
-    { id: 'CANETAS', nome: 'Canetas', descricao: 'Pontos por caneta' },
-    { id: 'CHAPEUS', nome: 'Chapéus', descricao: 'Pontos por chapéu' },
-    { id: 'DRIBLES_SIMPLES', nome: 'Dribles', descricao: 'Pontos por drible' },
-  ]
-
+import { mockCampeonatos } from '@/mocks/database'
+import { acoesPontuacao } from '@/lib/jogo-config'
 export default function CriarLigaPage() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
@@ -120,7 +93,7 @@ export default function CriarLigaPage() {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="descricao">Descricao</FieldLabel>
+                <FieldLabel htmlFor="descricao">Descrição</FieldLabel>
                 <Textarea
                   id="descricao"
                   placeholder="Descreva sua liga..."

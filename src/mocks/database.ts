@@ -29,9 +29,10 @@ export const mockCampeonatos = [
   {
     id: 1,
     nome: 'Campeonato Várzea 2024',
-    logo: undefined,
+    logo: 'https://a1.espncdn.com/combiner/i?img=%2Fi%2Fleaguelogos%2Fsoccer%2F500%2F23.png',
     tipoJogo: 'CAMPO',
-    idUsuario: 1
+    idUsuario: 1,
+    descricao: 'Campeonato do bairro Primeiro de Maio'
   },
 
   {
@@ -39,7 +40,8 @@ export const mockCampeonatos = [
     nome: 'Copa Universitária',
     logo: undefined,
     tipoJogo: 'FUTSAL',
-    idUsuario: 2
+    idUsuario: 2,
+    descricao: 'Campeonato universitario de São Joao'
   },
 
   {
@@ -47,7 +49,8 @@ export const mockCampeonatos = [
     nome: 'Society Open',
     logo: undefined,
     tipoJogo: 'FUT7',
-    idUsuario: 3
+    idUsuario: 3,
+    descricao: 'Campeonato society do bairro Primeiro de Maio'
   }
 ]
 
@@ -56,11 +59,12 @@ export const mockLigas = [
   {
     id: 1,
     nome: 'Liga dos Amigos',
-    logo: undefined,
+    logo: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2674.png',
     idCampeonato: 1,
     idUsuarioCriador: 1,
     codigoAcesso: 'ABC123',
-    maxParticipantes: 10
+    maxParticipantes: 10,
+    descricao: 'Liga montada pelos amigos do IF'
   },
 
   {
@@ -70,7 +74,8 @@ export const mockLigas = [
     idCampeonato: 2,
     idUsuarioCriador: 2,
     codigoAcesso: 'FUTSAL',
-    maxParticipantes: 15
+    maxParticipantes: 15,
+    descricao: 'Torneio universitario das atléticas de São João'
   },
 
   {
@@ -80,7 +85,8 @@ export const mockLigas = [
     idCampeonato: 3,
     idUsuarioCriador: 3,
     codigoAcesso: 'SOCIETY',
-    maxParticipantes: 20
+    maxParticipantes: 20,
+    descricao: 'Torneio society das atléticas de São João'
   }
 ]
 
@@ -113,7 +119,7 @@ export const mockAtletas = [
   {
     id: 1,
     nome: 'Gabriel Nunes',
-    foto: undefined,
+    foto: 'https://a1.espncdn.com/combiner/i?img=%2Fi%2Fleaguelogos%2Fsoccer%2F500%2F23.png',
     posicao: 'GOL',
     precoInicial: 8.5,
     idClube: 1,
@@ -351,7 +357,7 @@ export const mockDesempenhoEquipeFantasy = [
   {
     id: 1,
     pontuacaoEquipeFantasy: 25.5,
-    pontuacaoRodada: 25.5,
+    pontuacaoRodada: 5.5,
     pontuacaoTotalEquipeFantasy: 25.5,
     idDesempenhoAtleta: 1,
     idRodada: 1,

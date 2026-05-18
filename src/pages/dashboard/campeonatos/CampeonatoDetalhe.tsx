@@ -6,15 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { mockAtletas, mockClubes, mockCampeonatos } from '@/mocks/database'
 import { useAuth } from '@/hooks/use-auth'
 import type { Atleta, Campeonato, Clube } from '@/types'
+import { tipoJogoInfos } from '@/lib/jogo-config'
 
-const tipoJogoLabel: Record<string, { label: string; jogadores: number }> = {
-  CAMPO: { label: 'Campo', jogadores: 11 },
-  FUTSAL: { label: 'Futsal', jogadores: 5 },
-  FUT7: { label: 'Fut7', jogadores: 7 },
-}
 
 const statusBadgeColor: Record<string, string> = {
   ativo: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
@@ -35,7 +32,7 @@ export default function CampeonatoDetalhePage() {
   const isOwner = campeonato.idUsuario === user?.id
   const clubes = (mockClubes as Clube[]).filter((clube) => clube.idCampeonato === campeonato.id)
   const atletas = (mockAtletas as Atleta[]).filter((atleta) => clubes.some((clube) => clube.id === atleta.idClube))
-  const tipoInfo = tipoJogoLabel[campeonato.tipoJogo] || { label: 'Desconhecido', jogadores: 0 }
+  const tipoInfo = tipoJogoInfos[campeonato.tipoJogo]
   const statusAtual = campeonato.status ?? 'ativo'
 
   return (
@@ -120,7 +117,21 @@ export default function CampeonatoDetalhePage() {
                 const atletaCount = atletas.filter((atleta) => atleta.idClube === clube.id).length
                 return (
                   <TableRow key={clube.id}>
-                    <TableCell>{clube.nome}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {clube.logo ? (
+                          <Avatar>
+                            <AvatarImage src={clube.logo} alt={clube.nome} />
+                            <AvatarFallback>{clube.nome.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <Avatar>
+                            <AvatarFallback>{clube.nome.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        )}
+                        <span>{clube.nome}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">{atletaCount}</TableCell>
                   </TableRow>
                 )

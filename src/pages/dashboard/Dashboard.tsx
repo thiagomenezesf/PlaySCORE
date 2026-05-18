@@ -7,44 +7,33 @@ import { Card, CardContent } from '@/components/ui/card'
 import { StatsCard } from '@/components/playscore/stats-card'
 import { LeagueCard } from '@/components/playscore/league-card'
 import { RoundSummaryCard } from '@/components/playscore/round-summary-card'
+import { mockCampeonatos, mockEquipeLiga, mockLigas, mockDesempenhoEquipeFantasy } from '@/mocks/database'
 
-// Dados mockados - serao substituidos por chamadas ao Spring Boot
-const mockStats = {
-  minhasLigas: 3,
-  pontuacaoTotal: 156.5,
-  resumoRodada: {
-    nomeLiga: 'Liga dos Amigos',
-    logo: undefined,
-    pontuacaoRodada: 12.5,
-    pontuacaoTotal: 89.3,
-    colocacao: 2,
-  },
+const ligasComExtras = mockLigas.map((liga) => ({
+  ...liga,
+  participantes: mockEquipeLiga.filter((entry) => entry.idLiga === liga.id).length,
+  campeonatoNome: mockCampeonatos.find((camp) => camp.id === liga.idCampeonato)?.nome ?? '',
+}))
+
+const minhasLigas = ligasComExtras.length
+const pontuacaoTotal = mockEquipeLiga.reduce((sum, entry) => sum + entry.pontuacaoTotal, 0)
+const equipeDestaque = [...mockEquipeLiga].sort((a, b) => b.pontuacaoTotal - a.pontuacaoTotal)[0]
+const ligasOrdenadas = ligasComExtras.sort((a, b) => b.id - a.id)
+const resumoRodada = {
+  nomeLiga: ligasComExtras.find((liga) => liga.id === equipeDestaque?.idLiga)?.nome ?? 'Liga em destaque',
+  logo: undefined,
+  pontuacaoRodada:
+    equipeDestaque
+      ? mockDesempenhoEquipeFantasy.find(
+          (entry) => entry.idLiga === equipeDestaque.idLiga && entry.idEquipeFantasy === equipeDestaque.idEquipeFantasy,
+        )?.pontuacaoRodada ?? equipeDestaque.pontuacaoTotal
+      : 0,
+  pontuacaoTotal: equipeDestaque?.pontuacaoTotal ?? 0,
+  colocacao: 1,
 }
 
-const mockLigas = [
-  {
-    id: 1,
-    nome: 'Liga dos Amigos',
-    logo: undefined,
-    idCampeonato: 1,
-    idUsuarioCriador: 2,
-    codigoAcesso: 'ABC123',
-    descricao: 'Liga para competir com os amigos do bairro',
-    participantes: 8,
-    campeonatoNome: 'Campeonato da Varzea 2024',
-  },
-  {
-    id: 2,
-    nome: 'Pelada FC',
-    logo: undefined,
-    idCampeonato: 1,
-    idUsuarioCriador: 1,
-    codigoAcesso: 'XYZ789',
-    descricao: 'A liga mais disputada da pelada de domingo',
-    participantes: 12,
-    campeonatoNome: 'Campeonato da Varzea 2024',
-  },
-]
+// export ligas and resumo for other components if needed
+export { ligasComExtras as dashboardLigas, resumoRodada as dashboardResumo }
 
 const mockNoticias = [
   {
@@ -93,24 +82,24 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatsCard
           title="Minhas Ligas"
-          value={mockStats.minhasLigas}
+          value={minhasLigas}
           description="Ligas que participo"
           icon={Trophy}
         />
         <StatsCard
           title="Pontuação Total"
-          value={mockStats.pontuacaoTotal.toFixed(1)}
+          value={pontuacaoTotal.toFixed(1)}
           description="Somatório de todas as ligas"
           icon={TrendingUp}
           trend={{ value: 12, isPositive: true }}
         />
         <RoundSummaryCard
           title="Resumo da Rodada"
-          leagueName={mockStats.resumoRodada.nomeLiga}
-          logo={mockStats.resumoRodada.logo}
-          roundScore={mockStats.resumoRodada.pontuacaoRodada}
-          totalScore={mockStats.resumoRodada.pontuacaoTotal}
-          position={mockStats.resumoRodada.colocacao}
+          leagueName={resumoRodada.nomeLiga}
+          logo={resumoRodada.logo}
+          roundScore={resumoRodada.pontuacaoRodada}
+          totalScore={resumoRodada.pontuacaoTotal}
+          position={resumoRodada.colocacao}
         />
       </div>
 
@@ -128,7 +117,7 @@ export default function DashboardPage() {
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            {mockLigas.map((liga) => (
+            {ligasComExtras.map((liga) => (
               <LeagueCard
                 key={liga.id}
                 liga={liga}

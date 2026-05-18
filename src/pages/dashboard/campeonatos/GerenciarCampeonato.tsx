@@ -12,16 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { mockAtletas, mockClubes, mockCampeonatos } from '@/mocks/database'
 import { useAuth } from '@/hooks/use-auth'
 import type { Atleta, Campeonato, Clube } from '@/types'
-
-//NAO ESTA DINAMICO
-const tipoJogoOptions = [
-  { value: 'CAMPO', label: 'Campo (11 jogadores)' },
-  { value: 'FUTSAL', label: 'Futsal (5 jogadores)' },
-  { value: 'FUT7', label: 'Fut7 (7 jogadores)' },
-]
+import { posicaoLabels, tipoJogoOptions, posicoesPorTipoJogo } from '@/lib/jogo-config'
 
 export default function GerenciarCampeonatoPage() {
   const navigate = useNavigate()
@@ -67,6 +62,7 @@ export default function GerenciarCampeonatoPage() {
   const clubes = (mockClubes as Clube[]).filter((clube) => clube.idCampeonato === campeonato.id)
   const atletas = (mockAtletas as Atleta[]).filter((atleta) => clubes.some((clube) => clube.id === atleta.idClube))
   const atletasFiltrados = clubeFiltro === 'ALL' ? atletas : atletas.filter(a => a.idClube === clubeFiltro)
+  const posicaoOptions = posicoesPorTipoJogo[formData.tipoJogo] ?? ['GOL', 'ZAG', 'LAT', 'MEI', 'ATA']
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -351,7 +347,21 @@ export default function GerenciarCampeonatoPage() {
                     const atletaCount = atletas.filter((atleta) => atleta.idClube === clube.id).length
                     return (
                       <TableRow key={clube.id}>
-                        <TableCell>{clube.nome}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {clube.logo ? (
+                              <Avatar>
+                                <AvatarImage src={clube.logo} alt={clube.nome} />
+                                <AvatarFallback>{clube.nome.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <Avatar>
+                                <AvatarFallback>{clube.nome.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                            )}
+                            <span>{clube.nome}</span>
+                          </div>
+                        </TableCell>
                         <TableCell>{clube.sigla ?? '-'}</TableCell>
                         <TableCell className="text-right">{atletaCount}</TableCell>
                         <TableCell className="text-right">
@@ -501,7 +511,6 @@ export default function GerenciarCampeonatoPage() {
                   />
                 </Field>
 
-                NAO ESTA DINAMICO
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field>
                     <FieldLabel htmlFor="atletaPosicao">Posição</FieldLabel>
@@ -514,11 +523,11 @@ export default function GerenciarCampeonatoPage() {
                         <SelectValue placeholder="Selecione a posição" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="GOL">Goleiro</SelectItem>
-                        <SelectItem value="ZAG">Zagueiro</SelectItem>
-                        <SelectItem value="LAT">Lateral</SelectItem>
-                        <SelectItem value="MEI">Meio-campo</SelectItem>
-                        <SelectItem value="ATA">Atacante</SelectItem>
+                        {posicaoOptions.map((value) => (
+                          <SelectItem key={value} value={value}>
+                            {posicaoLabels[value]}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </Field>
@@ -625,8 +634,22 @@ export default function GerenciarCampeonatoPage() {
                     const clube = clubes.find((c) => c.id === atleta.idClube)
                     return (
                       <TableRow key={atleta.id}>
-                        <TableCell>{atleta.nome}</TableCell>
-                        <TableCell>{atleta.posicao}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {atleta.foto ? (
+                              <Avatar>
+                                <AvatarImage src={atleta.foto} alt={atleta.nome} />
+                                <AvatarFallback>{atleta.nome.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <Avatar>
+                                <AvatarFallback>{atleta.nome.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                            )}
+                            <span>{atleta.nome}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{posicaoLabels[atleta.posicao] ?? atleta.posicao}</TableCell>
                         <TableCell>{clube?.nome ?? '-'}</TableCell>
                         <TableCell className="text-right">C$ {atleta.precoInicial}</TableCell>
                         <TableCell className="text-right">
@@ -687,11 +710,11 @@ export default function GerenciarCampeonatoPage() {
                         </SelectTrigger>
 
                         <SelectContent>
-                          <SelectItem value="GOL">Goleiro</SelectItem>
-                          <SelectItem value="ZAG">Zagueiro</SelectItem>
-                          <SelectItem value="LAT">Lateral</SelectItem>
-                          <SelectItem value="MEI">Meio-campo</SelectItem>
-                          <SelectItem value="ATA">Atacante</SelectItem>
+                          {posicaoOptions.map((value) => (
+                            <SelectItem key={value} value={value}>
+                              {posicaoLabels[value]}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </Field>

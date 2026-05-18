@@ -8,22 +8,12 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { LeagueCard } from '@/components/playscore/league-card'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { useAuth } from '@/hooks/use-auth'
 import { mockLigas, mockCampeonatos, mockEquipesFantasy, mockEquipeLiga } from '@/mocks/database'
 
 export default function LigasPage() {
   const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
-  const [codigoAcesso, setCodigoAcesso] = useState('')
 
   const ligasComExtras = useMemo(
     () =>
@@ -53,10 +43,6 @@ export default function LigasPage() {
     )
   )
 
-  const handleEntrarLiga = () => {
-    console.log('Entrando na liga com codigo:', codigoAcesso)
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -68,37 +54,6 @@ export default function LigasPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Users className="h-4 w-4 mr-2" />
-                Entrar com Código
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Entrar em uma Liga</DialogTitle>
-                <DialogDescription>
-                  Digite o codigo de acesso fornecido pelo criador da liga.
-                </DialogDescription>
-              </DialogHeader>
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="codigo">Codigo de Acesso</FieldLabel>
-                  <Input
-                    id="codigo"
-                    placeholder="Ex: ABC123"
-                    value={codigoAcesso}
-                    onChange={(e) => setCodigoAcesso(e.target.value.toUpperCase())}
-                    maxLength={10}
-                  />
-                </Field>
-                <Button onClick={handleEntrarLiga} className="w-full">
-                  Entrar na Liga
-                </Button>
-              </FieldGroup>
-            </DialogContent>
-          </Dialog>
           <Button asChild>
             <Link to="/ligas/criar">
               <Plus className="h-4 w-4 mr-2" />
@@ -145,7 +100,15 @@ export default function LigasPage() {
                   key={liga.id}
                   liga={liga}
                   isOwner={liga.idUsuarioCriador === user?.id}
-                  showJoinButton={user != null && liga.idUsuarioCriador !== user.id}
+                  showJoinButton={
+                    user != null &&
+                    liga.idUsuarioCriador !== user.id &&
+                    !mockEquipeLiga.some(
+                      (entry) =>
+                        entry.idLiga === liga.id &&
+                        userFantasyTeamIds.includes(entry.idEquipeFantasy)
+                    )
+                  }
                 />
               ))}
           </div>

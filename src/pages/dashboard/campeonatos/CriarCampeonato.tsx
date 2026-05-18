@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { tipoJogoOptions, posicoesPorTipoJogo, posicaoLabels } from '@/lib/jogo-config'
 
 interface Clube {
   id: string
@@ -28,14 +29,6 @@ interface Atleta {
   clubeId: string
 }
 
-const posicoes = [
-  'Goleiro',
-  'Zagueiro',
-  'Lateral',
-  'Meio-campo',
-  'Atacante'
-]
-
 export default function CriarCampeonatoPage() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
@@ -43,7 +36,7 @@ export default function CriarCampeonatoPage() {
   const [formData, setFormData] = useState({
     nome: '',
     descricao: '',
-    numeroJogadores: '11',
+    tipoJogo: 'CAMPO',
   })
   const [clubes, setClubes] = useState<Clube[]>([])
   const [atletas, setAtletas] = useState<Atleta[]>([])
@@ -55,6 +48,8 @@ export default function CriarCampeonatoPage() {
     precoInicial: 0,
     clubeId: ''
   })
+
+  const posicaoOptions = posicoesPorTipoJogo[formData.tipoJogo as keyof typeof posicoesPorTipoJogo]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -168,18 +163,20 @@ export default function CriarCampeonatoPage() {
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="numeroJogadores">Jogadores por Time</FieldLabel>
+                  <FieldLabel htmlFor="tipoJogo">Tipo de Jogo</FieldLabel>
                   <Select
-                    value={formData.numeroJogadores}
-                    onValueChange={(value) => setFormData({ ...formData, numeroJogadores: value })}
+                    value={formData.tipoJogo}
+                    onValueChange={(value) => setFormData({ ...formData, tipoJogo: value })}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="5">5 jogadores (Futsal)</SelectItem>
-                      <SelectItem value="7">7 jogadores (Society)</SelectItem>
-                      <SelectItem value="11">11 jogadores (Campo)</SelectItem>
+                      {tipoJogoOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </Field>
@@ -322,18 +319,18 @@ export default function CriarCampeonatoPage() {
                     />
                   </Field>
                   <Field>
-                    <FieldLabel htmlFor="atletaPosicao">Posicao *</FieldLabel>
+                    <FieldLabel htmlFor="atletaPosicao">Posição *</FieldLabel>
                     <Select
                       value={novoAtleta.posicao}
                       onValueChange={(value) => setNovoAtleta({ ...novoAtleta, posicao: value })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione a posicao" />
+                        <SelectValue placeholder="Selecione a posição" />
                       </SelectTrigger>
                       <SelectContent>
-                        {posicoes.map((pos) => (
-                          <SelectItem key={pos} value={pos}>
-                            {pos}
+                        {posicaoOptions.map((posicao) => (
+                          <SelectItem key={posicao} value={posicao}>
+                            {posicaoLabels[posicao]}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -419,7 +416,7 @@ export default function CriarCampeonatoPage() {
                                   <div>
                                     <p className="font-medium text-sm">{atleta.nome}</p>
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="outline" className="text-xs">{atleta.posicao}</Badge>
+                                      <Badge variant="outline" className="text-xs">{posicaoLabels[atleta.posicao] ?? atleta.posicao}</Badge>
                                       <span className="text-xs text-muted-foreground">C$ {atleta.precoInicial.toFixed(2)}</span>
                                     </div>
                                   </div>

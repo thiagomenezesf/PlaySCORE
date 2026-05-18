@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 import { mockLigas, mockCampeonatos, mockEquipeLiga, mockEquipesFantasy, mockUsuarios, mockRegraPontuacaoLiga, mockDesempenhoEquipeFantasy, mockDesempenhoAtleta, mockRodadas, mockClubes, mockAtletas } from '@/mocks/database'
 import { useAuth } from '@/hooks/use-auth'
@@ -22,10 +24,16 @@ export default function LigaDetalhe() {
   const [copied, setCopied] = useState(false)
   const [tipoRanking, setTipoRanking] = useState<'geral' | 'rodada'>('geral')
   const [rodadaSelecionada, setRodadaSelecionada] = useState<number | 'todas'>('todas')
+  const [isJoining, setIsJoining] = useState(false)
+  const [joinCode, setJoinCode] = useState('')
+  const [joinError, setJoinError] = useState('')
+  const [joined, setJoined] = useState(false)
 
+  const ligaBase = mockLigas.find(l => l.id === Number(id)) as any
   const liga = {
-    ...mockLigas.find(l => l.id === Number(id)),
-    campeonatoNome: mockCampeonatos.find(c => c.id === mockLigas.find(l => l.id === Number(id))?.idCampeonato)?.nome ?? ''
+    ...ligaBase,
+    descricao: ligaBase?.descricao,
+    campeonatoNome: mockCampeonatos.find(c => c.id === ligaBase?.idCampeonato)?.nome ?? ''
   }
 
   if (!liga) {
@@ -58,6 +66,26 @@ export default function LigaDetalhe() {
     }
   })
   const isOwner = liga.idUsuarioCriador === user?.id
+  const userEquipeFantasy = user ? mockEquipesFantasy.find((equipe) => equipe.idUsuario === user.id) : undefined
+  const isMember = Boolean(
+    userEquipeFantasy &&
+      mockEquipeLiga.some(
+        (entry) => entry.idLiga === liga.id && entry.idEquipeFantasy === userEquipeFantasy.id
+      )
+  )
+  const hasAccess = isOwner || isMember || joined
+
+  const handleJoinLiga = () => {
+    if (joinCode.trim() === liga.codigoAcesso) {
+      setJoined(true)
+      setJoinError('')
+      setIsJoining(false)
+      setJoinCode('')
+      return
+    }
+
+    setJoinError('Código de acesso inválido')
+  }
 
   // Funções de cálculo
   const getPontuacaoRodada = (p: any, rodada: number) => p.pontuacoesPorRodada[rodada] || 0
@@ -110,15 +138,19 @@ export default function LigaDetalhe() {
               {isOwner && <Badge variant="secondary">Criador</Badge>}
             </div>
             <p className="text-muted-foreground">{liga.campeonatoNome}</p>
+            <p className="text-sm text-muted-foreground max-w-2xl mt-1">
+              {liga.descricao || 'Visualize os detalhes da liga antes de entrar.'}
+            </p>
           </div>
         </div>
 
         {/* DIREITA */}
         <div className="flex gap-2 flex-wrap">
-
-          <Button variant="outline" onClick={handleCopyCode}>
-            {copied ? 'Copiado!' : `Código: ${liga.codigoAcesso}`}
-          </Button>
+          {isOwner && (
+            <Button variant="outline" onClick={handleCopyCode}>
+              {copied ? 'Copiado!' : `Código: ${liga.codigoAcesso}`}
+            </Button>
+          )}
 
           {isOwner && (
             <Button
@@ -129,12 +161,46 @@ export default function LigaDetalhe() {
             </Button>
           )}
 
-          <Button onClick={() => navigate(`/dashboard/escalacao/${id}`)}>
-            Escalar Time
-          </Button>
-
+          {hasAccess ? (
+            <Button onClick={() => navigate(`/dashboard/escalacao/${id}`)}>
+              Escalar Time
+            </Button>
+          ) : (
+            <Button onClick={() => setIsJoining(true)}>
+              Entrar na Liga
+            </Button>
+          )}
         </div>
       </div>
+
+      {!hasAccess && isJoining && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Entrar na Liga</CardTitle>
+            <CardDescription>
+              Digite o código de acesso para participar desta liga.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-[1fr_auto] items-end">
+            <div>
+              <Label htmlFor="codigoAcesso">Código de Acesso</Label>
+              <Input
+                id="codigoAcesso"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                placeholder="Ex: ABC123"
+              />
+              {joinError && <p className="text-sm text-destructive mt-2">{joinError}</p>}
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <Button onClick={handleJoinLiga}>Confirmar Entrada</Button>
+              <Button variant="outline" onClick={() => setIsJoining(false)}>
+                Cancelar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* TABS */}
       <Tabs defaultValue="classificacao" className="space-y-6">

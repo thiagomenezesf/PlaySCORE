@@ -77,8 +77,8 @@ export function LeagueCard({
                 </Link>
               </Button>
               {showJoinButton && !isOwner && (
-                <Button variant="outline" size="sm">
-                  Entrar
+                <Button asChild variant="outline" size="sm">
+                  <Link to={`/ligas/${liga.id}`}>Entrar</Link>
                 </Button>
               )}
               {isOwner && (

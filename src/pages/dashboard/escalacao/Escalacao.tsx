@@ -15,7 +15,8 @@ import { mockEquipesFantasy, mockLigas, mockCampeonatos, mockEquipeLiga } from '
 import type { Atleta } from '@/types'
 import { Toaster } from '@/components/ui/toaster'
 import { X } from 'lucide-react'
-import { layoutsPorTipo, tiposJogo, posicaoLabels, posicaoColors } from '@/lib/escalao-config'
+import { layoutsPorTipo, tiposJogo, posicaoLabels, posicaoColors } from '@/lib/jogo-config'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 type JogadorEscalado = {
   id: number
@@ -43,21 +44,19 @@ const getPontuacaoJogador = (_id: number) => {
 }
 
 const mockMercado: Atleta[] = [
-  { id: 12, nome: 'Gabriel Nunes', posicao: 'GOL', precoInicial: 8.5, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(12) },
-  { id: 13, nome: 'Rafael Costa', posicao: 'ZAG', precoInicial: 7.0, idClube: 2, clube: { id: 2, nome: 'Corinthians da Varzea', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(13) },
-  { id: 14, nome: 'Lucas Freitas', posicao: 'ZAG', precoInicial: 7.0, idClube: 2, clube: { id: 2, nome: 'Corinthians da Varzea', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(14) },
-  { id: 15, nome: 'Leandro Silva', posicao: 'LAT', precoInicial: 6.0, idClube: 3, clube: { id: 3, nome: 'Santos Amador', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(15) },
-  { id: 16, nome: 'Joao Miguel', posicao: 'LAT', precoInicial: 6.0, idClube: 3, clube: { id: 3, nome: 'Santos Amador', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(16) },
-  { id: 17, nome: 'Fabio Mendes', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(17) },
-  { id: 18, nome: 'Felipe Melo', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(18) },
-  { id: 19, nome: 'Rogerio Cips', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(19) },
-  { id: 20, nome: 'Henrique Lima', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(20) },
-  { id: 21, nome: 'Diego Santos', posicao: 'ATA', precoInicial: 10.0, idClube: 5, clube: { id: 5, nome: 'Flamengo Amador', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(21) },
-  { id: 22, nome: 'Leo Lima', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(22) },
-  { id: 23, nome: 'Bruno Geison', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(23) },
-  { id: 24, nome: 'Meia Geison', posicao: 'MEI', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(24) }
-
-
+  { id: 12, nome: 'Gabriel Nunes', foto: 'https://i.pravatar.cc/150?img=12', posicao: 'GOL', precoInicial: 8.5, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(12) },
+  { id: 13, nome: 'Rafael Costa', foto: 'https://i.pravatar.cc/150?img=13', posicao: 'ZAG', precoInicial: 7.0, idClube: 2, clube: { id: 2, nome: 'Corinthians da Varzea', logo: 'https://i.pravatar.cc/100?img=12', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(13) },
+  { id: 14, nome: 'Lucas Freitas', foto: 'https://i.pravatar.cc/150?img=14', posicao: 'ZAG', precoInicial: 7.0, idClube: 2, clube: { id: 2, nome: 'Corinthians da Varzea', logo: 'https://i.pravatar.cc/100?img=12', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(14) },
+  { id: 15, nome: 'Leandro Silva', foto: 'https://i.pravatar.cc/150?img=15', posicao: 'LAT', precoInicial: 6.0, idClube: 3, clube: { id: 3, nome: 'Santos Amador', logo: 'https://i.pravatar.cc/100?img=13', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(15) },
+  { id: 16, nome: 'Joao Miguel', foto: 'https://i.pravatar.cc/150?img=16', posicao: 'LAT', precoInicial: 6.0, idClube: 3, clube: { id: 3, nome: 'Santos Amador', logo: 'https://i.pravatar.cc/100?img=13', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(16) },
+  { id: 17, nome: 'Fabio Mendes', foto: 'https://i.pravatar.cc/150?img=17', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(17) },
+  { id: 18, nome: 'Felipe Melo', foto: 'https://i.pravatar.cc/150?img=18', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(18) },
+  { id: 19, nome: 'Rogerio Cips', foto: 'https://i.pravatar.cc/150?img=19', posicao: 'MEI', precoInicial: 9.0, idClube: 1, clube: { id: 1, nome: 'Palmeirinha FC', logo: 'https://i.pravatar.cc/100?img=11', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(19) },
+  { id: 20, nome: 'Henrique Lima', foto: 'https://i.pravatar.cc/150?img=20', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(20) },
+  { id: 21, nome: 'Diego Santos', foto: 'https://i.pravatar.cc/150?img=21', posicao: 'ATA', precoInicial: 10.0, idClube: 5, clube: { id: 5, nome: 'Flamengo Amador', logo: 'https://i.pravatar.cc/100?img=15', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(21) },
+  { id: 22, nome: 'Leo Lima', foto: 'https://i.pravatar.cc/150?img=22', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(22) },
+  { id: 23, nome: 'Bruno Geison', foto: 'https://i.pravatar.cc/150?img=23', posicao: 'ATA', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(23) },
+  { id: 24, nome: 'Meia Geison', foto: 'https://i.pravatar.cc/150?img=24', posicao: 'MEI', precoInicial: 11.0, idClube: 4, clube: { id: 4, nome: 'Sao Paulo Pelada', logo: 'https://i.pravatar.cc/100?img=14', idCampeonato: 1 }, pontuacao: getPontuacaoJogador(24) }
 ]
 
 export default function EscalacaoPage() {
@@ -415,13 +414,33 @@ const layoutAtual =
               return (
                 <div key={a.id} className="p-3 rounded-lg bg-muted/50 hover:bg-muted transition">
                   <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium text-sm">{a.nome}</p>
-                      <p className="text-xs text-muted-foreground">{a.clube?.nome}</p>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-12 w-12">
+                        {a.foto ? (
+                          <AvatarImage src={a.foto} alt={a.nome} />
+                        ) : (
+                          <AvatarFallback>{a.nome.charAt(0)}</AvatarFallback>
+                        )}
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-sm">{a.nome}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {a.clube?.logo ? (
+                            <Avatar className="h-4 w-4">
+                              <AvatarImage src={a.clube.logo} alt={a.clube?.nome} />
+                            </Avatar>
+                          ) : (
+                            <Avatar className="h-4 w-4">
+                              <AvatarFallback>{a.clube?.nome?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                          )}
+                          <span>{a.clube?.nome}</span>
+                        </div>
+                      </div>
                     </div>
 
                     <Badge className={cn('border text-xs', posicaoColors[a.posicao])}>
-                      {a.posicao}
+                      {posicaoLabels[a.posicao] || a.posicao}
                     </Badge>
                   </div>
 
@@ -506,7 +525,7 @@ const layoutAtual =
 
       {mercadoFiltrado
         .sort((a, b) => (b.pontuacao || 0) - (a.pontuacao || 0))
-        .map((a, index) => (
+        .map((a) => (
           <div
             key={a.id}
             className="p-3 rounded-lg bg-muted/50"
@@ -514,18 +533,29 @@ const layoutAtual =
             <div className="flex justify-between items-center">
 
               <div className="flex items-center gap-3">
-                <span className="font-bold text-lg">
-                  #{index + 1}
-                </span>
-
+                <Avatar className="h-12 w-12">
+                  {a.foto ? (
+                    <AvatarImage src={a.foto} alt={a.nome} />
+                  ) : (
+                    <AvatarFallback>{a.nome.charAt(0)}</AvatarFallback>
+                  )}
+                </Avatar>
                 <div>
                   <p className="font-medium text-sm">
                     {a.nome}
                   </p>
-
-                  <p className="text-xs text-muted-foreground">
-                    {a.clube?.nome}
-                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    {a.clube?.logo ? (
+                      <Avatar className="h-4 w-4">
+                        <AvatarImage src={a.clube.logo} alt={a.clube?.nome} />
+                      </Avatar>
+                    ) : (
+                      <Avatar className="h-4 w-4">
+                        <AvatarFallback>{a.clube?.nome?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <span>{a.clube?.nome}</span>
+                  </div>
                 </div>
               </div>
 
@@ -538,7 +568,7 @@ const layoutAtual =
                   'border text-xs',
                   posicaoColors[a.posicao]
                 )}>
-                  {a.posicao}
+                  {posicaoLabels[a.posicao] || a.posicao}
                 </Badge>
               </div>
 
@@ -600,7 +630,13 @@ function PlayerSlot({ atleta, isCapitao, onRemove, onCapitao, mostrarPontuacao }
           isCapitao ? 'border-yellow-400' : 'border-green-500'
         )}
       >
-        <User size={18} />
+        <Avatar className="h-full w-full">
+          {atleta.foto ? (
+            <AvatarImage src={atleta.foto} alt={atleta.nome} />
+          ) : (
+            <AvatarFallback>{atleta.nome.charAt(0)}</AvatarFallback>
+          )}
+        </Avatar>
 
         {/* CAPITÃO FIXO */}
         {isCapitao && (
