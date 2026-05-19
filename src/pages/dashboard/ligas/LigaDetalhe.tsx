@@ -109,7 +109,7 @@ export default function LigaDetalhe() {
     }
   }
 
-  const getMedalColor = (posicao: number) => {
+  const getMedalColor = (posicao: number) => {  
     switch (posicao) {
       case 1: return 'text-yellow-400'
       case 2: return 'text-gray-400'
@@ -117,6 +117,40 @@ export default function LigaDetalhe() {
       default: return 'text-muted-foreground'
     }
   }
+
+  // AGRUPAR ESTATÍSTICAS DOS ATLETAS
+  const desempenhoAgrupado = Object.values(
+    mockDesempenhoAtleta.reduce((acc, desempenho) => {
+
+      // filtra por rodada quando estiver em "rodada"
+      if (
+        tipoRanking === 'rodada' &&
+        rodadaSelecionada !== 'todas' &&
+        desempenho.idRodada !== Number(rodadaSelecionada)
+      ) {
+        return acc
+      }
+
+      const atletaId = desempenho.idAtleta
+
+      if (!acc[atletaId]) {
+        acc[atletaId] = {
+          ...desempenho
+        }
+      } else {
+        acc[atletaId].gols += desempenho.gols
+        acc[atletaId].assistencias += desempenho.assistencias
+        acc[atletaId].finalizacoes += desempenho.finalizacoes
+        acc[atletaId].driblesSimples += desempenho.driblesSimples
+        acc[atletaId].caneta += desempenho.caneta
+        acc[atletaId].cartoesAmarelos += desempenho.cartoesAmarelos
+        acc[atletaId].cartoesVermelhos += desempenho.cartoesVermelhos
+        acc[atletaId].pontosCalculados += desempenho.pontosCalculados
+      }
+
+      return acc
+    }, {} as Record<number, any>)
+  )
 
   return (
     <div className="p-6 space-y-6">
@@ -464,11 +498,7 @@ export default function LigaDetalhe() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockDesempenhoAtleta
-                      .filter(d => tipoRanking === 'rodada' && rodadaSelecionada !== 'todas'
-                        ? d.idRodada === Number(rodadaSelecionada)
-                        : true
-                      )
+                    {desempenhoAgrupado
                       .sort((a, b) => b.gols - a.gols)
                       .map((desempenho) => {
                         const atleta = mockAtletas.find(a => a.id === desempenho.idAtleta)
@@ -508,11 +538,7 @@ export default function LigaDetalhe() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockDesempenhoAtleta
-                      .filter(d => tipoRanking === 'rodada' && rodadaSelecionada !== 'todas'
-                        ? d.idRodada === Number(rodadaSelecionada)
-                        : true
-                      )
+                    {desempenhoAgrupado
                       .sort((a, b) => b.pontosCalculados - a.pontosCalculados)
                       .map((desempenho) => {
                         const atleta = mockAtletas.find(a => a.id === desempenho.idAtleta)

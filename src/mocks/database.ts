@@ -123,7 +123,6 @@ export const mockAtletas = [
     posicao: 'GOL',
     precoInicial: 8.5,
     idClube: 1,
-    idDesempenhoAtleta: 1
   },
   {
     id: 2,
@@ -132,7 +131,6 @@ export const mockAtletas = [
     posicao: 'ATA',
     precoInicial: 12,
     idClube: 1,
-    idDesempenhoAtleta: 2
   },
   {
     id: 3,
@@ -141,7 +139,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 9,
     idClube: 2,
-    idDesempenhoAtleta: 3
   },
   {
     id: 4,
@@ -150,7 +147,6 @@ export const mockAtletas = [
     posicao: 'ZAG',
     precoInicial: 7.0,
     idClube: 2,
-    idDesempenhoAtleta: 1
   },
   {
     id: 5,
@@ -159,7 +155,6 @@ export const mockAtletas = [
     posicao: 'LAT',
     precoInicial: 6.0,
     idClube: 1,
-    idDesempenhoAtleta: 2
   },
   {
     id: 6,
@@ -168,7 +163,6 @@ export const mockAtletas = [
     posicao: 'PIVO',
     precoInicial: 10.0,
     idClube: 3,
-    idDesempenhoAtleta: 3
   },
   {
     id: 7,
@@ -177,7 +171,6 @@ export const mockAtletas = [
     posicao: 'ATA',
     precoInicial: 11.5,
     idClube: 1,
-    idDesempenhoAtleta: 1
   },
   {
     id: 8,
@@ -186,7 +179,6 @@ export const mockAtletas = [
     posicao: 'ZAG',
     precoInicial: 7.5,
     idClube: 2,
-    idDesempenhoAtleta: 2
   },
   {
     id: 9,
@@ -195,7 +187,6 @@ export const mockAtletas = [
     posicao: 'LAT',
     precoInicial: 6.5,
     idClube: 2,
-    idDesempenhoAtleta: 3
   },
   {
     id: 10,
@@ -204,7 +195,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 9.5,
     idClube: 1,
-    idDesempenhoAtleta: 1
   },
   {
     id: 11,
@@ -213,7 +203,6 @@ export const mockAtletas = [
     posicao: 'ALA',
     precoInicial: 13.0,
     idClube: 3,
-    idDesempenhoAtleta: 2
   },
   {
     id: 12,
@@ -222,7 +211,6 @@ export const mockAtletas = [
     posicao: 'GOL',
     precoInicial: 8.0,
     idClube: 2,
-    idDesempenhoAtleta: 3
   },
   {
     id: 13,
@@ -231,7 +219,6 @@ export const mockAtletas = [
     posicao: 'ZAG',
     precoInicial: 7.2,
     idClube: 1,
-    idDesempenhoAtleta: 1
   },
   {
     id: 14,
@@ -240,7 +227,6 @@ export const mockAtletas = [
     posicao: 'ALA',
     precoInicial: 6.3,
     idClube: 3,
-    idDesempenhoAtleta: 2
   },
   {
     id: 15,
@@ -249,7 +235,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 9.8,
     idClube: 2,
-    idDesempenhoAtleta: 3
   },
   {
     id: 16,
@@ -258,7 +243,6 @@ export const mockAtletas = [
     posicao: 'ATA',
     precoInicial: 12.5,
     idClube: 1,
-    idDesempenhoAtleta: 1
   },
   {
     id: 17,
@@ -267,7 +251,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 9.0,
     idClube: 1,
-    idDesempenhoAtleta: 2
   },
   {
     id: 18,
@@ -276,7 +259,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 9.0,
     idClube: 1,
-    idDesempenhoAtleta: 3
   },
   {
     id: 19,
@@ -285,7 +267,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 9.0,
     idClube: 1,
-    idDesempenhoAtleta: 1
   },
   {
     id: 20,
@@ -294,7 +275,6 @@ export const mockAtletas = [
     posicao: 'FIXO',
     precoInicial: 10.0,
     idClube: 3,
-    idDesempenhoAtleta: 2
   },
   {
     id: 21,
@@ -303,7 +283,6 @@ export const mockAtletas = [
     posicao: 'ATA',
     precoInicial: 11.0,
     idClube: 2,
-    idDesempenhoAtleta: 3
   },
   {
     id: 22,
@@ -312,7 +291,6 @@ export const mockAtletas = [
     posicao: 'ATA',
     precoInicial: 11.0,
     idClube: 2,
-    idDesempenhoAtleta: 1
   },
   {
     id: 23,
@@ -321,7 +299,6 @@ export const mockAtletas = [
     posicao: 'MEI',
     precoInicial: 11.0,
     idClube: 2,
-    idDesempenhoAtleta: 2
   },
   {
     id: 24,
@@ -330,7 +307,6 @@ export const mockAtletas = [
     posicao: 'ALA',
     precoInicial: 6.8,
     idClube: 3,
-    idDesempenhoAtleta: 3
   }
 ]
 
@@ -442,7 +418,26 @@ export const mockDesempenhoAtleta = [
     idAtleta: 3,
     pontosCalculados: 8.5,
     valorAtualizado: 9.5
-  }
+  },
+
+  {
+    id: 4,
+    gols: 12,
+    assistencias: 3,
+    cartoesAmarelos: 0,
+    cartoesVermelhos: 0,
+    finalizacoes: 5,
+    impedimentos: 0,
+    faltasCometidas: 2,
+    faltasRecebidas: 3,
+    caneta: 1,
+    chapeu: 0,
+    driblesSimples: 4,
+    idRodada: 2,
+    idAtleta: 1,
+    pontosCalculados: 15.5,
+    valorAtualizado: 9.0
+  },
 ]
 
 //REGRA_PONTUACAO_LIGA
@@ -510,7 +505,8 @@ export const mockEscalacao = [
     id: 'esc1',
     idAtleta: 1,
     idRodada: 1,
-    idEquipeFantasy: 1
+    idEquipeFantasy: 1,
+    isCapitao: true
   },
 
   {

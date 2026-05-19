@@ -92,7 +92,6 @@ export interface Atleta {
   precoInicial: number
   precoAtual?: number
   idClube: number // FK para Clube.id
-  idDesempenhoAtleta?: number // FK para DesempenhoAtleta.id
   clube?: Clube
   pontuacao?: number
   mediaPontuacao?: number

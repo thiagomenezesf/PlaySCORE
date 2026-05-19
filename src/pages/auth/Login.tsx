@@ -140,7 +140,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Nao tem uma conta? </span>
+            <span className="text-muted-foreground">Não tem uma conta? </span>
             <Link to="/cadastro" className="text-primary hover:underline font-medium">
               Cadastre-se
             </Link>
