@@ -61,14 +61,14 @@ export default function GerenciarLigaPage() {
   const isOwner = liga.idUsuarioCriador === user?.id
 
   const participantes = mockEquipeLiga.filter(
-    (entry) => entry.idLiga === liga.id
+    (entry) => entry.idLiga === liga!.id
   ).length
 
   const equipes = (mockEquipesFantasy as EquipeFantasy[]).filter((equipe) =>
     mockEquipeLiga.some(
       (entry) =>
         entry.idEquipeFantasy === equipe.id &&
-        entry.idLiga === liga.id
+        entry.idLiga === liga!.id
     )
   )
 

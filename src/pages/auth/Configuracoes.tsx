@@ -8,44 +8,63 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
+import { useToast } from '@/hooks/use-toast'
+import { Toaster } from '@/components/ui/toaster'
+
 export default function Configuracoes() {
   const navigate = useNavigate()
+
+    const { toast } = useToast()
 
   // 🔒 SENHA
   const [senhaAtual, setSenhaAtual] = useState('')
   const [novaSenha, setNovaSenha] = useState('')
   const [confirmarSenha, setConfirmarSenha] = useState('')
-  const [erroSenha, setErroSenha] = useState('')
-  const [sucessoSenha, setSucessoSenha] = useState(false)
 
   // 📧 EMAIL
   const [email, setEmail] = useState('thiago@email.com')
   const [novoEmail, setNovoEmail] = useState('')
-  const [erroEmail, setErroEmail] = useState('')
-  const [sucessoEmail, setSucessoEmail] = useState(false)
 
   // 🔥 ALTERAR SENHA
   const handleSenha = () => {
-    setErroSenha('')
-    setSucessoSenha(false)
 
     if (!senhaAtual || !novaSenha || !confirmarSenha) {
-      setErroSenha('Preencha todos os campos')
+            toast({
+              title: 'Campos obrigatórios',
+              description: 'Preencha todos os campos para salvar!',
+              variant: 'destructive'
+            })
+
       return
     }
 
     if (novaSenha.length < 6) {
-      setErroSenha('A nova senha deve ter pelo menos 6 caracteres')
+      toast({
+              title: 'Regra de senha',
+              description: 'A nova senha deve ter pelo menos 6 caracteres',
+              variant: 'destructive'
+            })
+      
       return
     }
 
     if (novaSenha !== confirmarSenha) {
-      setErroSenha('As senhas não coincidem')
+      toast({
+              title: 'Regra de senha',
+              description: 'As senhas não coincidem',
+              variant: 'destructive'
+            })
+
       return
     }
 
     // 🔥 FUTURO: API
-    setSucessoSenha(true)
+    else {
+      toast({
+              title: 'Sucesso ao salvar',
+              description: 'Você mudou sua senha com sucesso!',
+            })
+    }
 
     setSenhaAtual('')
     setNovaSenha('')
@@ -54,22 +73,42 @@ export default function Configuracoes() {
 
   // 🔥 ALTERAR EMAIL
   const handleEmail = () => {
-    setErroEmail('')
-    setSucessoEmail(false)
 
     if (!novoEmail) {
-      setErroEmail('Digite um novo email')
+      toast({
+              title: 'Email vazio',
+              description: 'Você precisa digitar um email para alterar!',
+              variant: 'destructive'
+            })
+
       return
+    }
+
+    if (novoEmail == email) {
+      toast({
+              title: 'Email igual',
+              description: 'Você precisa digitar um email diferente para alterar!',
+              variant: 'destructive'
+            })
+
+      return
+    }
+
+    else {
+      toast({
+              title: 'Sucesso ao alterar email',
+              description: 'Email alterado com sucesso!',
+            })
     }
 
     // 🔥 FUTURO: API
     setEmail(novoEmail)
     setNovoEmail('')
-    setSucessoEmail(true)
   }
 
   return (
     <div className="min-h-screen bg-background">
+      <Toaster />
       {/* HEADER COM VOLTAR */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 py-6 flex items-center gap-4">
@@ -114,15 +153,7 @@ export default function Configuracoes() {
             onChange={(e) => setConfirmarSenha(e.target.value)}
           />
 
-          {erroSenha && (
-            <p className="text-red-500 text-sm">{erroSenha}</p>
-          )}
-
-          {sucessoSenha && (
-            <p className="text-green-500 text-sm">
-              ✅ Senha alterada com sucesso
-            </p>
-          )}
+          
 
           <Button onClick={handleSenha}>
             <Save className="w-4 h-4 mr-2" />
@@ -151,16 +182,6 @@ export default function Configuracoes() {
             value={novoEmail}
             onChange={(e) => setNovoEmail(e.target.value)}
           />
-
-          {erroEmail && (
-            <p className="text-red-500 text-sm">{erroEmail}</p>
-          )}
-
-          {sucessoEmail && (
-            <p className="text-green-500 text-sm">
-              ✅ Email atualizado com sucesso
-            </p>
-          )}
 
           <Button onClick={handleEmail}>
             <Save className="w-4 h-4 mr-2" />

@@ -137,9 +137,12 @@ export default function LigaDetalhe() {
               <h1 className="text-2xl font-bold">{liga.nome}</h1>
               {isOwner && <Badge variant="secondary">Criador</Badge>}
             </div>
-            <p className="text-muted-foreground">{liga.campeonatoNome}</p>
+            <p className="text-md text-muted-foreground mb-4">{liga.campeonatoNome}</p>
             <p className="text-sm text-muted-foreground max-w-2xl mt-1">
               {liga.descricao || 'Visualize os detalhes da liga antes de entrar.'}
+            </p>
+            <p className="text-lg font-bold text-muted-foreground mt-2">
+              Participantes: {participantes.length}/{liga.maxParticipantes}
             </p>
           </div>
         </div>

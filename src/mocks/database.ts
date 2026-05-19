@@ -165,7 +165,7 @@ export const mockAtletas = [
     id: 6,
     nome: 'Thiago Pereira',
     foto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGv0ZIrLidHrXmxdSY38qwW3_FyQZhJo-sFQ&s',
-    posicao: 'MEI',
+    posicao: 'PIVO',
     precoInicial: 10.0,
     idClube: 3,
     idDesempenhoAtleta: 3
@@ -210,7 +210,7 @@ export const mockAtletas = [
     id: 11,
     nome: 'Henrique Lima',
     foto: 'https://i.pravatar.cc/150?img=11',
-    posicao: 'ATA',
+    posicao: 'ALA',
     precoInicial: 13.0,
     idClube: 3,
     idDesempenhoAtleta: 2
@@ -237,7 +237,7 @@ export const mockAtletas = [
     id: 14,
     nome: 'Leandro Ribeiro',
     foto: 'https://i.pravatar.cc/150?img=14',
-    posicao: 'LAT',
+    posicao: 'ALA',
     precoInicial: 6.3,
     idClube: 3,
     idDesempenhoAtleta: 2
@@ -291,7 +291,7 @@ export const mockAtletas = [
     id: 20,
     nome: 'Diego Santos',
     foto: 'https://i.pravatar.cc/150?img=20',
-    posicao: 'ATA',
+    posicao: 'FIXO',
     precoInicial: 10.0,
     idClube: 3,
     idDesempenhoAtleta: 2
@@ -327,7 +327,7 @@ export const mockAtletas = [
     id: 24,
     nome: 'Vitor Santos',
     foto: 'https://i.pravatar.cc/150?img=24',
-    posicao: 'LAT',
+    posicao: 'ALA',
     precoInicial: 6.8,
     idClube: 3,
     idDesempenhoAtleta: 3
@@ -364,21 +364,24 @@ export const mockEquipesFantasy = [
     id: 1,
     nome: 'Time do Thiago',
     logo: 'https://s2-oglobo.glbimg.com/x4Y1G1MqbENX9R4PFvZmmI_wwTY=/0x0:613x631/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2026/r/D/x6aVyoRTiBXocaO5yhiw/screenshot-162.png',
-    idUsuario: 1
+    idUsuario: 1,
+    titulos: 1
   },
 
   {
     id: 2,
     nome: 'Os Craques',
     logo: undefined,
-    idUsuario: 2
+    idUsuario: 2,
+    titulos: 0
   },
 
   {
     id: 3,
     nome: 'Equipe Maria',
     logo: undefined,
-    idUsuario: 3
+    idUsuario: 3,
+    titulos: 0
   }
 ]
 
@@ -543,9 +546,8 @@ export const mockEscalacao = [
 export const mockDesempenhoEquipeFantasy = [
   {
     id: 1,
-    pontuacaoEquipeFantasy: 25.5,
+    pontuacaoEquipeFantasy: 27.5,
     pontuacaoRodada: 5.5,
-    pontuacaoTotalEquipeFantasy: 25.5,
     idDesempenhoAtleta: 1,
     idRodada: 1,
     idLiga: 1,
@@ -554,20 +556,18 @@ export const mockDesempenhoEquipeFantasy = [
 
   {
     id: 2,
-    pontuacaoEquipeFantasy: 12.0,
+    pontuacaoEquipeFantasy: 123.0,
     pontuacaoRodada: 12.0,
-    pontuacaoTotalEquipeFantasy: 37.5,
     idDesempenhoAtleta: 2,
-    idRodada: 1,
+    idRodada: 2,
     idLiga: 1,
     idEquipeFantasy: 1
   },
 
   {
     id: 3,
-    pontuacaoEquipeFantasy: 8.5,
+    pontuacaoEquipeFantasy: 18.5,
     pontuacaoRodada: 8.5,
-    pontuacaoTotalEquipeFantasy: 46.0,
     idDesempenhoAtleta: 3,
     idRodada: 2,
     idLiga: 1,
@@ -578,10 +578,9 @@ export const mockDesempenhoEquipeFantasy = [
     id: 4,
     pontuacaoEquipeFantasy: 15.5,
     pontuacaoRodada: 15.5,
-    pontuacaoTotalEquipeFantasy: 15.5,
     idDesempenhoAtleta: 1,
     idRodada: 1,
-    idLiga: 2,
+    idLiga: 1,
     idEquipeFantasy: 2
   }
 ]
@@ -616,7 +615,7 @@ export const mockEquipeLiga = [
     id: 4,
     idLiga: 1,
     patrimonio: 95.0,
-    pontuacaoTotal: 8.5,
+    pontuacaoTotal: 80.5,
     idEquipeFantasy: 2
   }
 ]

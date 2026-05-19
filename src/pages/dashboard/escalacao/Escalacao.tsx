@@ -50,19 +50,25 @@ export default function EscalacaoPage() {
   const equipeLiga = liga && equipeFantasy ? mockEquipeLiga.find(el => el.idLiga === liga.id && el.idEquipeFantasy === equipeFantasy.id) : null
   
   // Preparar mercado com atletas do database
-  const mercado = mockAtletas.map(atleta => {
-    const clube = mockClubes.find(c => c.id === atleta.idClube)
-    return {
-      ...atleta,
-      clube: {
-        id: clube?.id || 0,
-        nome: clube?.nome || 'Clube Desconhecido',
-        logo: clube?.logo || 'https://i.pravatar.cc/100?img=99',
-        idCampeonato: clube?.idCampeonato || 1
-      },
-      pontuacao: getPontuacaoJogador(atleta.id)
-    } as Atleta & { clube: any; pontuacao: number }
-  })
+  const mercado = mockAtletas
+    .map(atleta => {
+      const clube = mockClubes.find(c => c.id === atleta.idClube)
+      return {
+        ...atleta,
+        clube: {
+          id: clube?.id || 0,
+          nome: clube?.nome || 'Clube Desconhecido',
+          logo: clube?.logo || 'https://i.pravatar.cc/100?img=99',
+          idCampeonato: clube?.idCampeonato || 0
+        },
+        pontuacao: getPontuacaoJogador(atleta.id)
+      } as Atleta & { clube: any; pontuacao: number }
+    })
+    .filter(a => {
+      // Mostrar apenas atletas cujo clube pertence ao mesmo campeonato da liga atual
+      if (!liga || !liga.idCampeonato) return false
+      return a.clube?.idCampeonato === liga.idCampeonato
+    })
   
   // Loading states
   if (!user) {
@@ -135,7 +141,8 @@ export default function EscalacaoPage() {
     preco: atleta.precoInicial,
     clube: atleta.clube?.nome || '',
     isCapitao: false,
-    pontuacao: atleta.pontuacao
+    pontuacao: atleta.pontuacao,
+    foto: atleta.foto
   }
 
   setTime({

@@ -104,7 +104,6 @@ export interface EquipeFantasy {
   nome: string
   logo?: string
   idUsuario: number // FK para Usuario.id
-  patrimonio: number
   pontuacaoTotal?: number
   formacaoAtual?: string
   atletas?: Atleta[]
@@ -162,7 +161,6 @@ export interface Escalacao {
 export interface DesempenhoEquipeFantasy {
   id: number
   pontuacaoEquipeFantasy: number
-  pontuacaoTotalEquipeFantasy: number
   idDesempenhoAtleta: number // FK para DesempenhoAtleta.id
 }
 
