@@ -7,7 +7,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { StatsCard } from '@/components/playscore/stats-card'
 import { LeagueCard } from '@/components/playscore/league-card'
 import { RoundSummaryCard } from '@/components/playscore/round-summary-card'
-import { mockCampeonatos, mockEquipeLiga, mockLigas, mockDesempenhoEquipeFantasy } from '@/mocks/database'
+import { mockCampeonatos, mockEquipeLiga, mockLigas, mockDesempenhoEquipeFantasy, mockUsuarios } from '@/mocks/database'
+import { useAuth } from '@/hooks/use-auth'
 
 const ligasComExtras = mockLigas.map((liga) => ({
   ...liga,
@@ -51,13 +52,16 @@ const mockNoticias = [
 ]
 
 export default function DashboardPage() {
+  const { user } = useAuth()
+  const dadosUsuario = mockUsuarios.find(u => u.id === user.id);
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-display font-bold">
-            Bem-vindo, <span className="text-primary">Usuario</span>
+            Bem-vindo, <span className="text-primary">{dadosUsuario?.nome}!</span>
           </h1>
           <p className="text-muted-foreground">
             Acompanhe suas ligas e escale seu time para a próxima rodada.
